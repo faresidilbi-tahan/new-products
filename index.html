@@ -4,20 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Abed Tahan — Image Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root { --ink:#111; --line:#dcdcdc; --dim:#777; --bg:#fafafa; }
+  :root { --ink:#1565C0; --line:#dcdcdc; --dim:#777; --bg:#fafafa; }
   * { box-sizing:border-box; margin:0; }
-  body { font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif; background:var(--bg); color:var(--ink); display:flex; min-height:100vh; }
-  aside { width:262px; background:#111; color:#fff; flex-shrink:0; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; }
+  body { font-family:'Outfit',-apple-system,"Segoe UI",Roboto,Arial,sans-serif; background:var(--bg); color:var(--ink); display:flex; min-height:100vh; }
+  aside { width:262px; background:#1565C0; color:#fff; flex-shrink:0; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; }
   aside .logo { padding:20px 18px 12px; font-size:13px; font-weight:700; }
+  .logo img { width:170px !important; }
   aside .logo span { display:block; font-size:11px; font-weight:400; color:#999; }
   #list { flex:1; overflow-y:auto; padding:6px 10px 14px; }
   #list button { display:flex; align-items:center; gap:9px; width:100%; text-align:left; background:none; border:none; border-radius:6px; padding:9px 11px; font-size:13px; color:#ccc; cursor:pointer; margin-bottom:2px; }
   #list button:hover { background:#222; }
-  #list button.active { background:#fff; color:#111; font-weight:700; }
+  #list button.active { background:#fff; color:#1565C0; font-weight:700; }
   #list button .num { width:22px; height:22px; border-radius:6px; background:rgba(255,255,255,.15); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-  #list button.active .num { background:#111; color:#fff; }
-  #list button.done .num { background:#fff; color:#111; }
+  #list button.active .num { background:#1565C0; color:#fff; }
+  #list button.done .num { background:#fff; color:#1565C0; }
   #list button.done .num::before { content:"Y"; }
   #list button.rej .num { background:#555; color:#fff; }
   #list button.rej .num::before { content:"N"; }
@@ -36,21 +40,21 @@
   .cand .imgwrap { height:225px; display:flex; align-items:center; justify-content:center; background:#fff; }
   .cand img { max-width:100%; max-height:100%; object-fit:contain; }
   .cand .meta { font-size:11px; color:var(--dim); padding:6px 10px; border-top:1px solid var(--line); }
-  .cand.approved { border-color:#111; }
-  .tick { position:absolute; top:10px; left:10px; width:26px; height:26px; border-radius:6px; background:#111; color:#fff; display:none; align-items:center; justify-content:center; font-weight:800; font-size:13px; }
+  .cand.approved { border-color:#1565C0; }
+  .tick { position:absolute; top:10px; left:10px; width:26px; height:26px; border-radius:6px; background:#1565C0; color:#fff; display:none; align-items:center; justify-content:center; font-weight:800; font-size:13px; }
   .cand.approved .tick { display:flex; }
   .mainbtn { position:absolute; top:10px; right:10px; background:#fff; border:1px solid var(--line); font-size:12px; font-weight:600; padding:4px 11px; border-radius:6px; cursor:pointer; color:var(--dim); }
-  .cand.ismain .mainbtn { background:#111; color:#fff; border-color:#111; }
+  .cand.ismain .mainbtn { background:#1565C0; color:#fff; border-color:#1565C0; }
   .nav2 { display:flex; gap:10px; margin-top:22px; align-items:center; flex-wrap:wrap; }
-  .nav2 button { border:1px solid var(--line); border-radius:6px; padding:11px 20px; font-size:14px; font-weight:600; cursor:pointer; background:#fff; color:#111; }
+  .nav2 button { border:1px solid var(--line); border-radius:6px; padding:11px 20px; font-size:14px; font-weight:600; cursor:pointer; background:#fff; color:#1565C0; }
   .nav2 .back { color:var(--dim); }
-  .nav2 .next { background:#111; color:#fff; border-color:#111; }
-  .nav2 .fin { background:#111; color:#fff; border-color:#111; }
-  .nav2 .none { color:#111; margin-left:auto; }
+  .nav2 .next { background:#1565C0; color:#fff; border-color:#1565C0; }
+  .nav2 .fin { background:#1565C0; color:#fff; border-color:#1565C0; }
+  .nav2 .none { color:#1565C0; margin-left:auto; }
   .pane.rejected .cand { opacity:.35; pointer-events:none; }
-  .pane.rejected .nav2 .none { background:#111; color:#fff; }
+  .pane.rejected .nav2 .none { background:#1565C0; color:#fff; }
   #bar { position:fixed; bottom:0; left:262px; right:0; background:#fff; border-top:1px solid var(--line); padding:12px 20px; display:flex; gap:12px; align-items:center; z-index:10; }
-  #bar > button { background:#111; color:#fff; border:none; border-radius:6px; padding:12px 20px; font-size:14px; font-weight:700; cursor:pointer; }
+  #bar > button { background:#1565C0; color:#fff; border:none; border-radius:6px; padding:12px 20px; font-size:14px; font-weight:700; cursor:pointer; }
   #bar .n { font-size:12.5px; color:var(--dim); }
   table.nf td { padding:10px 12px; border-bottom:1px solid var(--line); font-size:13.5px; vertical-align:top; }
   .empty { padding:40px; color:var(--dim); font-size:14px; }
