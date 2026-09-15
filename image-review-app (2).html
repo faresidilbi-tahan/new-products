@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abed Tahan — Image Review</title>
+<style>
+  :root { --ink:#111; --line:#dcdcdc; --dim:#777; --bg:#fafafa; }
+  * { box-sizing:border-box; margin:0; }
+  body { font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif; background:var(--bg); color:var(--ink); display:flex; min-height:100vh; }
+  aside { width:262px; background:#111; color:#fff; flex-shrink:0; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; }
+  aside .logo { padding:20px 18px 12px; font-size:13px; font-weight:700; }
+  aside .logo span { display:block; font-size:11px; font-weight:400; color:#999; }
+  #list { flex:1; overflow-y:auto; padding:6px 10px 14px; }
+  #list button { display:flex; align-items:center; gap:9px; width:100%; text-align:left; background:none; border:none; border-radius:6px; padding:9px 11px; font-size:13px; color:#ccc; cursor:pointer; margin-bottom:2px; }
+  #list button:hover { background:#222; }
+  #list button.active { background:#fff; color:#111; font-weight:700; }
+  #list button .num { width:22px; height:22px; border-radius:6px; background:rgba(255,255,255,.15); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  #list button.active .num { background:#111; color:#fff; }
+  #list button.done .num { background:#fff; color:#111; }
+  #list button.done .num::before { content:"Y"; }
+  #list button.rej .num { background:#555; color:#fff; }
+  #list button.rej .num::before { content:"N"; }
+  #list .sep { font-size:10.5px; letter-spacing:.1em; color:#888; padding:12px 12px 5px; text-transform:uppercase; }
+  #prog { padding:13px 18px; border-top:1px solid #333; font-size:12px; color:#bbb; }
+  #prog .track { height:6px; background:#333; border-radius:6px; overflow:hidden; margin-top:6px; }
+  #prog .fill { height:100%; width:0%; background:#fff; border-radius:6px; transition:width .25s; }
+  main { flex:1; padding:24px 28px 100px; }
+  .pane { display:none; }
+  .pane.active { display:block; }
+  .t { font-size:17px; font-weight:700; line-height:1.35; }
+  .meta2 { font-size:12px; color:var(--dim); font-family:ui-monospace,Menlo,monospace; margin-top:5px; }
+  .imgs { display:grid; grid-template-columns:repeat(auto-fill,minmax(225px,1fr)); gap:15px; margin-top:12px; }
+  .cand { border:2px solid var(--line); border-radius:6px; overflow:hidden; cursor:pointer; position:relative; background:#fff; transition:transform .12s, border-color .12s; }
+  .cand:hover { transform:translateY(-2px); }
+  .cand .imgwrap { height:225px; display:flex; align-items:center; justify-content:center; background:#fff; }
+  .cand img { max-width:100%; max-height:100%; object-fit:contain; }
+  .cand .meta { font-size:11px; color:var(--dim); padding:6px 10px; border-top:1px solid var(--line); }
+  .cand.approved { border-color:#111; }
+  .tick { position:absolute; top:10px; left:10px; width:26px; height:26px; border-radius:6px; background:#111; color:#fff; display:none; align-items:center; justify-content:center; font-weight:800; font-size:13px; }
+  .cand.approved .tick { display:flex; }
+  .mainbtn { position:absolute; top:10px; right:10px; background:#fff; border:1px solid var(--line); font-size:12px; font-weight:600; padding:4px 11px; border-radius:6px; cursor:pointer; color:var(--dim); }
+  .cand.ismain .mainbtn { background:#111; color:#fff; border-color:#111; }
+  .nav2 { display:flex; gap:10px; margin-top:22px; align-items:center; flex-wrap:wrap; }
+  .nav2 button { border:1px solid var(--line); border-radius:6px; padding:11px 20px; font-size:14px; font-weight:600; cursor:pointer; background:#fff; color:#111; }
+  .nav2 .back { color:var(--dim); }
+  .nav2 .next { background:#111; color:#fff; border-color:#111; }
+  .nav2 .fin { background:#111; color:#fff; border-color:#111; }
+  .nav2 .none { color:#111; margin-left:auto; }
+  .pane.rejected .cand { opacity:.35; pointer-events:none; }
+  .pane.rejected .nav2 .none { background:#111; color:#fff; }
+  #bar { position:fixed; bottom:0; left:262px; right:0; background:#fff; border-top:1px solid var(--line); padding:12px 20px; display:flex; gap:12px; align-items:center; z-index:10; }
+  #bar > button { background:#111; color:#fff; border:none; border-radius:6px; padding:12px 20px; font-size:14px; font-weight:700; cursor:pointer; }
+  #bar .n { font-size:12.5px; color:var(--dim); }
+  table.nf td { padding:10px 12px; border-bottom:1px solid var(--line); font-size:13.5px; vertical-align:top; }
+  .empty { padding:40px; color:var(--dim); font-size:14px; }
+  @media (max-width:700px){ aside{width:66px} aside .logo, #list button .lbl, #prog{display:none} #bar{left:66px} }
+</style>
+</head>
+<body>
+<aside>
+  <div class="logo">Image Review<span id="batchlabel">Loading…</span></div>
+  <div id="list"></div>
+  <div id="prog"><span id="ptxt">0 / 0 reviewed</span><div class="track"><div class="fill" id="pfill"></div></div></div>
+</aside>
+<main id="main"><div class="empty">Loading pending items…</div></main>
+<div id="bar" style="display:none">
+  <button onclick="submitAll()">Confirm & Upload to Shopify</button>
+  <span class="n" id="exnote">Click images to approve · "Main" = cover photo · "None good" if all bad</span>
+</div>
+<script>
+// ---- Point these at your n8n instance ----
+const PENDING_URL = "https://n8n.srv838782.hstgr.cloud/webhook/image-review-pending";
+const SUBMIT_URL  = "https://n8n.srv838782.hstgr.cloud/webhook/image-review-submit";
+// -------------------------------------------
+
+let DATA = [];
+let NOTFOUND = [];
+const sel = {};
+const rejected = new Set();
+const main = document.getElementById('main');
+const list = document.getElementById('list');
+
+async function load() {
+  try {
+    const res = await fetch(PENDING_URL);
+    const json = await res.json();
+    DATA = (json.products || []).map((p, i) => ({ ...p, n: i + 1 }));
+    NOTFOUND = json.notFound || [];
+    DATA.forEach(p => { sel[p.k] = { approved: new Set(), main: null }; });
+    render();
+  } catch (e) {
+    main.innerHTML = `<div class="empty">Couldn't load pending items. Check PENDING_URL and that the n8n workflow is active.<br><br>${e}</div>`;
+  }
+}
+
+function render() {
+  document.getElementById('batchlabel').textContent = DATA.length + ' pending';
+  if (!DATA.length && !NOTFOUND.length) {
+    main.innerHTML = '<div class="empty">Nothing pending right now — all caught up.</div>';
+    return;
+  }
+  document.getElementById('bar').style.display = DATA.length ? 'flex' : 'none';
+  list.innerHTML = '';
+  main.innerHTML = '';
+
+  DATA.forEach((p, i) => {
+    const b = document.createElement('button');
+    b.innerHTML = `<span class="num"><i>${p.n}</i></span><span class="lbl">${p.title || p.k}</span>`;
+    b.dataset.pane = p.k;
+    b.onclick = () => activate(p.k);
+    list.appendChild(b);
+
+    const d = document.createElement('div');
+    d.className = 'pane';
+    d.id = 'p-' + p.k;
+    d.innerHTML = `
+      <div class="t">${p.title || ''}</div>
+      <div class="meta2">SKU: ${p.sku || 'n/a'} · Vendor: ${p.vendor || 'n/a'}</div>
+      <div class="imgs">${p.cands.map(c => `
+        <div class="cand" data-k="${p.k}" data-l="${c.l}">
+          <span class="tick">Y</span>
+          <button class="mainbtn" onclick="setMain(event,'${p.k}','${c.l}')">Main</button>
+          <div class="imgwrap"><img loading="lazy" src="${c.url}" onerror="this.closest('.cand').style.display='none'"></div>
+          <div class="meta">${c.src || ''}</div>
+        </div>`).join('')}</div>
+      <div class="nav2">
+        ${i > 0 ? `<button class="back" onclick="activate('${DATA[i - 1].k}')">Back</button>` : ''}
+        ${i < DATA.length - 1 ? `<button class="next" onclick="activate('${DATA[i + 1].k}')">Next</button>` : `<button class="fin" onclick="submitAll()">Finish</button>`}
+        <button class="none" onclick="toggleReject('${p.k}')">None are good</button>
+      </div>`;
+    main.appendChild(d);
+  });
+
+  if (NOTFOUND.length) {
+    list.insertAdjacentHTML('beforeend', '<div class="sep">Not found — need supplier</div>');
+    const nb = document.createElement('button');
+    nb.innerHTML = `<span class="num">N</span><span class="lbl">Not found (${NOTFOUND.length})</span>`;
+    nb.dataset.pane = 'nf';
+    nb.onclick = () => activate('nf');
+    list.appendChild(nb);
+    const nd = document.createElement('div');
+    nd.className = 'pane';
+    nd.id = 'p-nf';
+    nd.innerHTML = `<div class="t">No images — need supplier info / photos</div>
+      <table class="nf" style="margin-top:12px;border-collapse:collapse;max-width:900px">
+        ${NOTFOUND.map(x => `<tr><td style="font-weight:600;width:38%">${x[0]}</td><td style="color:#5a7290;font-size:12.5px">${x[1]}</td></tr>`).join('')}
+      </table>`;
+    main.appendChild(nd);
+  }
+
+  document.querySelectorAll('.cand').forEach(el => {
+    el.addEventListener('click', e => {
+      if (e.target.classList.contains('mainbtn')) return;
+      const k = el.dataset.k;
+      if (rejected.has(k)) return;
+      const s = sel[k], l = el.dataset.l;
+      if (s.approved.has(l)) {
+        s.approved.delete(l); el.classList.remove('approved');
+        if (s.main === l) { s.main = null; el.classList.remove('ismain'); }
+      } else {
+        s.approved.add(l); el.classList.add('approved');
+        if (!s.main) { s.main = l; el.classList.add('ismain'); }
+      }
+      refreshProgress();
+    });
+  });
+
+  if (DATA.length) activate(DATA[0].k);
+  refreshProgress();
+}
+
+function activate(id) {
+  document.querySelectorAll('#list button').forEach(b => b.classList.toggle('active', b.dataset.pane === id));
+  document.querySelectorAll('.pane').forEach(p => p.classList.toggle('active', p.id === 'p-' + id));
+  window.scrollTo(0, 0);
+}
+
+function refreshProgress() {
+  let done = 0;
+  DATA.forEach(p => {
+    const btn = document.querySelector(`#list button[data-pane="${p.k}"]`);
+    const has = sel[p.k].approved.size > 0, rej = rejected.has(p.k);
+    btn.classList.toggle('done', has && !rej);
+    btn.classList.toggle('rej', rej);
+    if (has || rej) done++;
+  });
+  document.getElementById('ptxt').textContent = done + ' / ' + DATA.length + ' reviewed';
+  document.getElementById('pfill').style.width = (DATA.length ? done / DATA.length * 100 : 0) + '%';
+}
+
+function toggleReject(k) {
+  const pane = document.getElementById('p-' + k);
+  if (rejected.has(k)) { rejected.delete(k); pane.classList.remove('rejected'); }
+  else {
+    rejected.add(k); pane.classList.add('rejected');
+    sel[k].approved.clear(); sel[k].main = null;
+    pane.querySelectorAll('.cand').forEach(c => c.classList.remove('approved', 'ismain'));
+  }
+  refreshProgress();
+}
+
+function setMain(e, k, l) {
+  e.stopPropagation();
+  if (rejected.has(k)) return;
+  document.querySelectorAll(`.cand[data-k="${CSS.escape(k)}"]`).forEach(c => c.classList.remove('ismain'));
+  const s = sel[k]; s.main = l; s.approved.add(l);
+  document.querySelector(`.cand[data-k="${CSS.escape(k)}"][data-l="${l}"]`).classList.add('ismain', 'approved');
+  refreshProgress();
+}
+
+async function submitAll() {
+  const approved = {}, skipped = [];
+  DATA.forEach(p => {
+    if (rejected.has(p.k)) return;
+    const s = sel[p.k];
+    if (!s.approved.size) { skipped.push(p.k); return; }
+    const mainL = s.main || [...s.approved][0];
+    approved[p.k] = [mainL, ...[...s.approved].filter(l => l !== mainL)].map(l => p.cands.find(c => c.l === l).url);
+  });
+  const payload = { approved, rejected: [...rejected], skipped };
+
+  document.getElementById('exnote').textContent = 'Uploading to Shopify…';
+  try {
+    const res = await fetch(SUBMIT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    document.getElementById('exnote').textContent = 'Sent to Shopify. Reloading...';
+    setTimeout(load, 1200);
+  } catch (e) {
+    document.getElementById('exnote').textContent = 'Failed to submit: ' + e;
+  }
+}
+
+load();
+</script>
+</body>
+</html>
