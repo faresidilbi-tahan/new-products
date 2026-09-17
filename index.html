@@ -8,35 +8,39 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root { --ink:#1565C0; --line:#dcdcdc; --dim:#777; --bg:#fafafa; }
+  :root { --ink:#1565C0; --line:#dcdcdc; --dim:#777; --bg:#fafafa; --green:#1e7e34; --red:#b3261e; --gray:#6b6b6b; }
   * { box-sizing:border-box; margin:0; }
   body { font-family:'Outfit',-apple-system,"Segoe UI",Roboto,Arial,sans-serif; background:var(--bg); color:var(--ink); display:flex; min-height:100vh; }
   aside { width:262px; background:#1565C0; color:#fff; flex-shrink:0; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; }
   aside .logo { padding:20px 18px 12px; font-size:13px; font-weight:700; }
   .logo img { width:170px !important; }
-  aside .logo span { display:block; font-size:11px; font-weight:400; color:#fff; }
   #list { flex:1; overflow-y:auto; padding:6px 10px 14px; }
   #list button { display:flex; align-items:center; gap:9px; width:100%; text-align:left; background:none; border:none; border-radius:6px; padding:9px 11px; font-size:13px; color:#ccc; cursor:pointer; margin-bottom:2px; }
   #list button:hover { background:#fff; color:#1565C0; }
   #list button.active { background:#fff; color:#1565C0; font-weight:700; }
   #list button .num { width:22px; height:22px; border-radius:6px; background:rgba(255,255,255,.15); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   #list button.active .num { background:#1565C0; color:#fff; }
-  #list button.done .num { background:#fff; color:#1565C0; }
-  #list button.done .num::before { content:"Y"; }
-  #list button.rej .num { background:#555; color:#fff; }
-  #list button.rej .num::before { content:"N"; }
+  #list button.st-uploaded .num { background:var(--green); color:#fff; }
+  #list button.st-upload_failed .num { background:var(--red); color:#fff; }
+  #list button.st-rejected .num { background:var(--gray); color:#fff; }
   #list .sep { font-size:10.5px; letter-spacing:.1em; color:#fff; padding:12px 12px 5px; text-transform:uppercase; }
   #prog { padding:13px 18px; border-top:1px solid #333; font-size:12px; color:#bbb; }
   #prog .track { height:6px; background:#333; border-radius:6px; overflow:hidden; margin-top:6px; }
   #prog .fill { height:100%; width:0%; background:#fff; border-radius:6px; transition:width .25s; }
-  main { flex:1; padding:24px 28px 100px; }
+  main { flex:1; padding:24px 28px 60px; }
   .pane { display:none; }
   .pane.active { display:block; }
   .t { font-size:17px; font-weight:700; line-height:1.35; }
   .meta2 { font-size:12px; color:var(--dim); font-family:ui-monospace,Menlo,monospace; margin-top:5px; }
+  .statusbar { margin-top:14px; padding:10px 14px; border-radius:6px; font-size:13px; font-weight:600; }
+  .statusbar.st-uploaded { background:#e6f4ea; color:var(--green); }
+  .statusbar.st-upload_failed { background:#fdecea; color:var(--red); }
+  .statusbar.st-rejected { background:#f0f0f0; color:var(--gray); }
   .imgs { display:grid; grid-template-columns:repeat(auto-fill,minmax(225px,1fr)); gap:15px; margin-top:12px; }
   .cand { border:2px solid var(--line); border-radius:6px; overflow:hidden; cursor:pointer; position:relative; background:#fff; transition:transform .12s, border-color .12s; }
   .cand:hover { transform:translateY(-2px); }
+  .locked .cand { cursor:default; }
+  .locked .cand:hover { transform:none; }
   .cand .imgwrap { height:225px; display:flex; align-items:center; justify-content:center; background:#fff; }
   .cand img { max-width:100%; max-height:100%; object-fit:contain; }
   .cand .meta { font-size:11px; color:var(--dim); padding:6px 10px; border-top:1px solid var(--line); }
@@ -45,20 +49,25 @@
   .cand.approved .tick { display:flex; }
   .mainbtn { position:absolute; top:10px; right:10px; background:#fff; border:1px solid var(--line); font-size:12px; font-weight:600; padding:4px 11px; border-radius:6px; cursor:pointer; color:var(--dim); }
   .cand.ismain .mainbtn { background:#1565C0; color:#fff; border-color:#1565C0; }
+  .desc-box { margin-top:18px; border:1px solid var(--line); border-radius:6px; padding:14px; background:#fff; max-width:700px; }
+  .desc-box .dtitle { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--dim); margin-bottom:8px; }
+  .desc-box p { font-size:13.5px; line-height:1.5; color:#333; }
+  .verdict { display:inline-block; margin-top:8px; font-size:11.5px; font-weight:700; padding:3px 9px; border-radius:6px; }
+  .verdict.match { background:#e6f4ea; color:var(--green); }
+  .verdict.mismatch { background:#fdecea; color:var(--red); }
+  .verdict.unsure { background:#fff4e0; color:#9a6b00; }
+  .desc-reason { font-size:12px; color:var(--dim); margin-top:4px; }
+  .desc-check { margin-top:10px; display:flex; align-items:center; gap:8px; font-size:13px; }
   .nav2 { display:flex; gap:10px; margin-top:22px; align-items:center; flex-wrap:wrap; }
   .nav2 button { border:1px solid var(--line); border-radius:6px; padding:11px 20px; font-size:14px; font-weight:600; cursor:pointer; background:#fff; color:#1565C0; }
   .nav2 .back { color:var(--dim); }
   .nav2 .next { background:#1565C0; color:#fff; border-color:#1565C0; }
-  .nav2 .fin { background:#1565C0; color:#fff; border-color:#1565C0; }
-  .nav2 .none { color:#1565C0; margin-left:auto; }
-  .pane.rejected .cand { opacity:.35; pointer-events:none; }
-  .pane.rejected .nav2 .none { background:#1565C0; color:#fff; }
-  #bar { position:fixed; bottom:0; left:262px; right:0; background:#fff; border-top:1px solid var(--line); padding:12px 20px; display:flex; gap:12px; align-items:center; z-index:10; }
-  #bar > button { background:#1565C0; color:#fff; border:none; border-radius:6px; padding:12px 20px; font-size:14px; font-weight:700; cursor:pointer; }
-  #bar .n { font-size:12.5px; color:var(--dim); }
+  .nav2 .upload { background:var(--green); color:#fff; border-color:var(--green); }
+  .nav2 .upload:disabled { background:#bcbcbc; border-color:#bcbcbc; cursor:not-allowed; }
+  .nav2 .none { color:var(--red); margin-left:auto; }
   table.nf td { padding:10px 12px; border-bottom:1px solid var(--line); font-size:13.5px; vertical-align:top; }
   .empty { padding:40px; color:var(--dim); font-size:14px; }
-  @media (max-width:700px){ aside{width:66px} aside .logo, #list button .lbl, #prog{display:none} #bar{left:66px} }
+  @media (max-width:700px){ aside{width:66px} aside .logo, #list button .lbl, #prog{display:none} }
 </style>
 </head>
 <body>
@@ -67,11 +76,7 @@
   <div id="list"></div>
   <div id="prog"><span id="ptxt">0 / 0 reviewed</span><div class="track"><div class="fill" id="pfill"></div></div></div>
 </aside>
-<main id="main"><div class="empty">Loading pending items…</div></main>
-<div id="bar" style="display:none">
-  <button onclick="submitAll()">Confirm & Upload to Shopify</button>
-  <span class="n" id="exnote">Click images to approve · "Main" = cover photo · "None good" if all bad</span>
-</div>
+<main id="main"><div class="empty">Loading products…</div></main>
 <script>
 // ---- Point these at your n8n instance ----
 const PENDING_URL = "https://n8n.srv838782.hstgr.cloud/webhook/image-review-pending";
@@ -81,57 +86,77 @@ const SUBMIT_URL  = "https://n8n.srv838782.hstgr.cloud/webhook/image-review-subm
 let DATA = [];
 let NOTFOUND = [];
 const sel = {};
-const rejected = new Set();
 const main = document.getElementById('main');
 const list = document.getElementById('list');
 
-async function load() {
+async function load(keepActive) {
   try {
     const res = await fetch(PENDING_URL);
     const json = await res.json();
     DATA = (json.products || []).map((p, i) => ({ ...p, n: i + 1 }));
     NOTFOUND = json.notFound || [];
-    DATA.forEach(p => { sel[p.k] = { approved: new Set(), main: null }; });
-    render();
+    DATA.forEach(p => { if (!sel[p.k]) sel[p.k] = { approved: new Set(), main: null, includeDesc: false }; });
+    render(keepActive);
   } catch (e) {
     main.innerHTML = `<div class="empty">Couldn't load pending items. Check PENDING_URL and that the n8n workflow is active.<br><br>${e}</div>`;
   }
 }
 
-function render() {
-  document.getElementById('batchlabel').textContent = DATA.length + ' pending';
+function isLocked(p) { return p.status && p.status !== 'pending'; }
+
+function render(keepActive) {
+  document.getElementById('batchlabel').textContent = DATA.length + ' products';
   if (!DATA.length && !NOTFOUND.length) {
-    main.innerHTML = '<div class="empty">Nothing pending right now — all caught up.</div>';
+    main.innerHTML = '<div class="empty">Nothing here yet.</div>';
     return;
   }
-  document.getElementById('bar').style.display = DATA.length ? 'flex' : 'none';
   list.innerHTML = '';
   main.innerHTML = '';
 
   DATA.forEach((p, i) => {
     const b = document.createElement('button');
+    const stCls = p.status && p.status !== 'pending' ? 'st-' + p.status : '';
+    b.className = stCls;
     b.innerHTML = `<span class="num"><i>${p.n}</i></span><span class="lbl">${p.title || p.k}</span>`;
     b.dataset.pane = p.k;
     b.onclick = () => activate(p.k);
     list.appendChild(b);
 
+    const locked = isLocked(p);
     const d = document.createElement('div');
-    d.className = 'pane';
+    d.className = 'pane' + (locked ? ' locked' : '');
     d.id = 'p-' + p.k;
+
+    const statusMsg = locked
+      ? `<div class="statusbar st-${p.status}">${p.status.replace('_',' ').toUpperCase()}${p.result_message ? ' — ' + p.result_message : ''}</div>`
+      : '';
+
+    const descBox = p.description ? `
+      <div class="desc-box">
+        <div class="dtitle">Fetched description</div>
+        <p>${p.description}</p>
+        ${p.description_ai_verdict ? `<span class="verdict ${p.description_ai_verdict}">AI check: ${p.description_ai_verdict}</span>
+        <div class="desc-reason">${p.description_ai_reason || ''}</div>` : ''}
+        ${!locked ? `<label class="desc-check"><input type="checkbox" id="desc-${p.k}" ${sel[p.k].includeDesc ? 'checked' : ''} onchange="toggleDesc('${p.k}', this.checked)"> Include this description when uploading</label>` : ''}
+      </div>` : '';
+
     d.innerHTML = `
       <div class="t">${p.title || ''}</div>
       <div class="meta2">SKU: ${p.sku || 'n/a'} · Vendor: ${p.vendor || 'n/a'}</div>
+      ${statusMsg}
       <div class="imgs">${p.cands.map(c => `
         <div class="cand" data-k="${p.k}" data-l="${c.l}">
           <span class="tick">Y</span>
-          <button class="mainbtn" onclick="setMain(event,'${p.k}','${c.l}')">Main</button>
+          ${!locked ? `<button class="mainbtn" onclick="setMain(event,'${p.k}','${c.l}')">Main</button>` : ''}
           <div class="imgwrap"><img loading="lazy" src="${c.url}" onerror="this.closest('.cand').style.display='none'"></div>
           <div class="meta">${c.src || ''}</div>
         </div>`).join('')}</div>
+      ${descBox}
       <div class="nav2">
         ${i > 0 ? `<button class="back" onclick="activate('${DATA[i - 1].k}')">Back</button>` : ''}
-        ${i < DATA.length - 1 ? `<button class="next" onclick="activate('${DATA[i + 1].k}')">Next</button>` : `<button class="fin" onclick="submitAll()">Finish</button>`}
-        <button class="none" onclick="toggleReject('${p.k}')">None are good</button>
+        ${i < DATA.length - 1 ? `<button class="next" onclick="activate('${DATA[i + 1].k}')">Next</button>` : ''}
+        ${!locked ? `<button class="upload" id="upbtn-${p.k}" onclick="uploadProduct('${p.k}')" disabled>Upload to Shopify</button>
+        <button class="none" onclick="rejectProduct('${p.k}')">Reject</button>` : ''}
       </div>`;
     main.appendChild(d);
   });
@@ -153,12 +178,11 @@ function render() {
     main.appendChild(nd);
   }
 
-  document.querySelectorAll('.cand').forEach(el => {
+  document.querySelectorAll('.pane:not(.locked) .cand').forEach(el => {
     el.addEventListener('click', e => {
       if (e.target.classList.contains('mainbtn')) return;
-      const k = el.dataset.k;
-      if (rejected.has(k)) return;
-      const s = sel[k], l = el.dataset.l;
+      const k = el.dataset.k, l = el.dataset.l;
+      const s = sel[k];
       if (s.approved.has(l)) {
         s.approved.delete(l); el.classList.remove('approved');
         if (s.main === l) { s.main = null; el.classList.remove('ismain'); }
@@ -166,11 +190,14 @@ function render() {
         s.approved.add(l); el.classList.add('approved');
         if (!s.main) { s.main = l; el.classList.add('ismain'); }
       }
-      refreshProgress();
+      refreshUploadButton(k);
     });
   });
 
-  if (DATA.length) activate(DATA[0].k);
+  DATA.forEach(p => { if (!isLocked(p)) refreshUploadButton(p.k); });
+
+  const target = keepActive && document.getElementById('p-' + keepActive) ? keepActive : (DATA[0] && DATA[0].k);
+  if (target) activate(target);
   refreshProgress();
 }
 
@@ -180,51 +207,43 @@ function activate(id) {
   window.scrollTo(0, 0);
 }
 
+function refreshUploadButton(k) {
+  const btn = document.getElementById('upbtn-' + k);
+  if (btn) btn.disabled = sel[k].approved.size === 0;
+}
+
 function refreshProgress() {
   let done = 0;
-  DATA.forEach(p => {
-    const btn = document.querySelector(`#list button[data-pane="${p.k}"]`);
-    const has = sel[p.k].approved.size > 0, rej = rejected.has(p.k);
-    btn.classList.toggle('done', has && !rej);
-    btn.classList.toggle('rej', rej);
-    if (has || rej) done++;
-  });
+  DATA.forEach(p => { if (p.status && p.status !== 'pending') done++; });
   document.getElementById('ptxt').textContent = done + ' / ' + DATA.length + ' reviewed';
   document.getElementById('pfill').style.width = (DATA.length ? done / DATA.length * 100 : 0) + '%';
 }
 
-function toggleReject(k) {
-  const pane = document.getElementById('p-' + k);
-  if (rejected.has(k)) { rejected.delete(k); pane.classList.remove('rejected'); }
-  else {
-    rejected.add(k); pane.classList.add('rejected');
-    sel[k].approved.clear(); sel[k].main = null;
-    pane.querySelectorAll('.cand').forEach(c => c.classList.remove('approved', 'ismain'));
-  }
-  refreshProgress();
-}
-
 function setMain(e, k, l) {
   e.stopPropagation();
-  if (rejected.has(k)) return;
   document.querySelectorAll(`.cand[data-k="${CSS.escape(k)}"]`).forEach(c => c.classList.remove('ismain'));
   const s = sel[k]; s.main = l; s.approved.add(l);
   document.querySelector(`.cand[data-k="${CSS.escape(k)}"][data-l="${l}"]`).classList.add('ismain', 'approved');
-  refreshProgress();
+  refreshUploadButton(k);
 }
 
-async function submitAll() {
-  const approved = {}, skipped = [];
-  DATA.forEach(p => {
-    if (rejected.has(p.k)) return;
-    const s = sel[p.k];
-    if (!s.approved.size) { skipped.push(p.k); return; }
-    const mainL = s.main || [...s.approved][0];
-    approved[p.k] = [mainL, ...[...s.approved].filter(l => l !== mainL)].map(l => p.cands.find(c => c.l === l).url);
-  });
-  const payload = { approved, rejected: [...rejected], skipped };
+function toggleDesc(k, checked) { sel[k].includeDesc = checked; }
 
-  document.getElementById('exnote').textContent = 'Uploading to Shopify…';
+async function uploadProduct(k) {
+  const p = DATA.find(x => x.k === k);
+  const s = sel[k];
+  const mainL = s.main || [...s.approved][0];
+  const urls = [mainL, ...[...s.approved].filter(l => l !== mainL)].map(l => p.cands.find(c => c.l === l).url);
+  await submitOne(k, { productId: k, decision: 'approved', urls, includeDescription: !!s.includeDesc });
+}
+
+async function rejectProduct(k) {
+  await submitOne(k, { productId: k, decision: 'rejected', urls: [] });
+}
+
+async function submitOne(k, payload) {
+  const btn = document.getElementById('upbtn-' + k);
+  if (btn) { btn.disabled = true; btn.textContent = 'Uploading...'; }
   try {
     const res = await fetch(SUBMIT_URL, {
       method: 'POST',
@@ -232,11 +251,10 @@ async function submitAll() {
       body: JSON.stringify(payload)
     });
     if (!res.ok) throw new Error('HTTP ' + res.status);
-    document.getElementById('exnote').textContent = 'Sent to Shopify. Reloading...';
-    setTimeout(load, 1200);
   } catch (e) {
-    document.getElementById('exnote').textContent = 'Failed to submit: ' + e;
+    alert('Failed to submit: ' + e);
   }
+  load(k);
 }
 
 load();
