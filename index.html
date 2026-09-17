@@ -24,6 +24,8 @@
   #list button.st-upload_failed .num { background:var(--red); color:#fff; }
   #list button.st-rejected .num { background:var(--gray); color:#fff; }
   #list .sep { font-size:10.5px; letter-spacing:.1em; color:#fff; padding:12px 12px 5px; text-transform:uppercase; }
+  .tabbtn { flex:1; background:rgba(255,255,255,.12); border:none; border-radius:6px; padding:8px 0; font-size:12.5px; font-weight:700; color:#cfe0f5; cursor:pointer; }
+  .tabbtn.active { background:#fff; color:#1565C0; }
   #prog { padding:13px 18px; border-top:1px solid #333; font-size:12px; color:#bbb; }
   #prog .track { height:6px; background:#333; border-radius:6px; overflow:hidden; margin-top:6px; }
   #prog .fill { height:100%; width:0%; background:#fff; border-radius:6px; transition:width .25s; }
@@ -73,6 +75,10 @@
 <body>
 <aside>
   <div class="logo"><img style="width:100%; margin: auto;" src="https://abedtahan.com/cdn/shop/files/AT_Logo_400x200_Transparent.png?v=1732612010&amp;width=250"><span id="batchlabel" style="display:block;margin-top:8px">Loading...</span></div>
+  <div id="tabs" style="display:flex;gap:6px;padding:0 10px 8px">
+    <button id="tab-today" class="tabbtn active" onclick="setTab('today')">Today</button>
+    <button id="tab-earlier" class="tabbtn" onclick="setTab('earlier')">Earlier</button>
+  </div>
   <div id="list"></div>
   <div id="prog"><span id="ptxt">0 / 0 reviewed</span><div class="track"><div class="fill" id="pfill"></div></div></div>
 </aside>
@@ -85,15 +91,29 @@ const SUBMIT_URL  = "https://n8n.srv838782.hstgr.cloud/webhook/image-review-subm
 
 let DATA = [];
 let NOTFOUND = [];
+let ACTIVE_TAB = 'today';
 const sel = {};
 const main = document.getElementById('main');
 const list = document.getElementById('list');
+
+function isToday(iso) {
+  if (!iso) return true; // no timestamp -> treat as new, safer default
+  const d = new Date(iso), now = new Date();
+  return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+}
+
+function setTab(tab) {
+  ACTIVE_TAB = tab;
+  document.getElementById('tab-today').classList.toggle('active', tab === 'today');
+  document.getElementById('tab-earlier').classList.toggle('active', tab === 'earlier');
+  render();
+}
 
 async function load(keepActive) {
   try {
     const res = await fetch(PENDING_URL);
     const json = await res.json();
-    DATA = (json.products || []).map((p, i) => ({ ...p, n: i + 1 }));
+    DATA = (json.products || []);
     NOTFOUND = json.notFound || [];
     DATA.forEach(p => { if (!sel[p.k]) sel[p.k] = { approved: new Set(), main: null, includeDesc: false }; });
     render(keepActive);
@@ -104,14 +124,27 @@ async function load(keepActive) {
 
 function isLocked(p) { return p.status && p.status !== 'pending'; }
 
+let CURRENT_SCOPED = [];
+
 function render(keepActive) {
-  document.getElementById('batchlabel').textContent = DATA.length + ' products';
-  if (!DATA.length && !NOTFOUND.length) {
-    main.innerHTML = '<div class="empty">Nothing here yet.</div>';
+  const scoped = DATA.filter(p => isToday(p.createdAt) === (ACTIVE_TAB === 'today')).map((p, i) => ({ ...p, n: i + 1 }));
+  CURRENT_SCOPED = scoped;
+  const todayCount = DATA.filter(p => isToday(p.createdAt)).length;
+  const earlierCount = DATA.length - todayCount;
+  document.getElementById('tab-today').textContent = `Today (${todayCount})`;
+  document.getElementById('tab-earlier').textContent = `Earlier (${earlierCount})`;
+  document.getElementById('batchlabel').textContent = scoped.length + ' products';
+  if (!scoped.length && !(ACTIVE_TAB === 'today' && NOTFOUND.length)) {
+    list.innerHTML = '';
+    main.innerHTML = `<div class="empty">Nothing in "${ACTIVE_TAB === 'today' ? 'Today' : 'Earlier'}" right now.</div>`;
     return;
   }
   list.innerHTML = '';
   main.innerHTML = '';
+  renderProducts(scoped, keepActive);
+}
+
+function renderProducts(DATA, keepActive) {
 
   DATA.forEach((p, i) => {
     const b = document.createElement('button');
@@ -161,7 +194,7 @@ function render(keepActive) {
     main.appendChild(d);
   });
 
-  if (NOTFOUND.length) {
+  if (NOTFOUND.length && ACTIVE_TAB === 'today') {
     list.insertAdjacentHTML('beforeend', '<div class="sep">Not found — need supplier</div>');
     const nb = document.createElement('button');
     nb.innerHTML = `<span class="num">N</span><span class="lbl">Not found (${NOTFOUND.length})</span>`;
@@ -214,9 +247,9 @@ function refreshUploadButton(k) {
 
 function refreshProgress() {
   let done = 0;
-  DATA.forEach(p => { if (p.status && p.status !== 'pending') done++; });
-  document.getElementById('ptxt').textContent = done + ' / ' + DATA.length + ' reviewed';
-  document.getElementById('pfill').style.width = (DATA.length ? done / DATA.length * 100 : 0) + '%';
+  CURRENT_SCOPED.forEach(p => { if (p.status && p.status !== 'pending') done++; });
+  document.getElementById('ptxt').textContent = done + ' / ' + CURRENT_SCOPED.length + ' reviewed';
+  document.getElementById('pfill').style.width = (CURRENT_SCOPED.length ? done / CURRENT_SCOPED.length * 100 : 0) + '%';
 }
 
 function setMain(e, k, l) {
