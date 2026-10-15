@@ -8,21 +8,21 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root { --ink:#1565C0; --line:#dcdcdc; --dim:#777; --bg:#fafafa; --text:#1d2733; --soft:#eef4fc; }
+  :root { --ink:#1565C0; --line:#dcdcdc; --dim:#777; --bg:#fafafa; --text:#1d2733; --soft:#eef4fc; --warn:#a35c00; --warnbg:#fff3e0; }
   * { box-sizing:border-box; margin:0; }
   body { font-family:'Outfit',-apple-system,"Segoe UI",Roboto,Arial,sans-serif; background:var(--bg); color:var(--ink); display:flex; min-height:100vh; }
   aside { width:262px; background:#1565C0; color:#fff; flex-shrink:0; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; }
   aside .logo { padding:20px 18px 12px; font-size:13px; font-weight:700; }
   .logo img { width:170px !important; }
 
-  /* Tabs */
-  #tabs { display:flex; gap:4px; margin:4px 12px 10px; padding:4px; background:rgba(255,255,255,.14); border-radius:8px; }
-  #tabs button { flex:1; display:flex; align-items:center; justify-content:center; gap:7px; border:none; background:none; color:#dbe7f7; font:600 13px 'Outfit',sans-serif; padding:8px 6px; border-radius:6px; cursor:pointer; }
-  #tabs button:hover { color:#fff; }
+  /* Navigation */
+  #tabs { display:flex; flex-direction:column; gap:3px; margin:4px 12px 10px; padding:4px; background:rgba(255,255,255,.12); border-radius:9px; }
+  #tabs button { display:flex; align-items:center; gap:10px; border:none; background:none; color:#dbe7f7; font:600 13.5px 'Outfit',sans-serif; padding:9px 11px; border-radius:6px; cursor:pointer; text-align:left; }
+  #tabs button:hover { color:#fff; background:rgba(255,255,255,.08); }
   #tabs button.on { background:#fff; color:#1565C0; }
-  #tabs svg { width:15px; height:15px; flex-shrink:0; }
-  #tabs button:focus-visible, .hrow:focus-visible, .seg button:focus-visible, .refresh:focus-visible { outline:2px solid #1565C0; outline-offset:2px; }
-  #tabs button:focus-visible { outline-color:#fff; }
+  #tabs svg { width:16px; height:16px; flex-shrink:0; }
+  #tabs button:focus-visible { outline:2px solid #fff; outline-offset:2px; }
+  .bk:focus-visible, .pr:focus-visible, .refresh:focus-visible { outline:2px solid #1565C0; outline-offset:-2px; }
 
   #list { flex:1; overflow-y:auto; padding:6px 10px 14px; }
   #list button { display:flex; align-items:center; gap:9px; width:100%; text-align:left; background:none; border:none; border-radius:6px; padding:9px 11px; font-size:13px; color:#ccc; cursor:pointer; margin-bottom:2px; }
@@ -34,7 +34,6 @@
   #list button.done .num::before { content:"Y"; }
   #list button.rej .num { background:#555; color:#fff; }
   #list button.rej .num::before { content:"N"; }
-  #list .sep { font-size:10.5px; letter-spacing:.1em; color:#fff; padding:12px 12px 5px; text-transform:uppercase; }
   #prog { padding:13px 18px; border-top:1px solid #333; font-size:12px; color:#bbb; }
   #prog .track { height:6px; background:#333; border-radius:6px; overflow:hidden; margin-top:6px; }
   #prog .fill { height:100%; width:0%; background:#fff; border-radius:6px; transition:width .25s; }
@@ -67,88 +66,107 @@
   #bar { position:fixed; bottom:0; left:262px; right:0; background:#fff; border-top:1px solid var(--line); padding:12px 20px; display:flex; gap:12px; align-items:center; z-index:10; }
   #bar > button { background:#1565C0; color:#fff; border:none; border-radius:6px; padding:12px 20px; font-size:14px; font-weight:700; cursor:pointer; }
   #bar .n { font-size:12.5px; color:var(--dim); }
-  table.nf td { padding:10px 12px; border-bottom:1px solid var(--line); font-size:13.5px; vertical-align:top; }
   .empty { padding:40px; color:var(--dim); font-size:14px; }
 
-  /* History */
-  #history { max-width:1080px; color:var(--text); }
+  /* Shared page chrome (History + All products) */
+  .page { max-width:1080px; color:var(--text); }
   .h-head { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
   .h-head h1 { font-size:24px; font-weight:700; letter-spacing:-.01em; color:var(--text); }
   .h-sub { font-size:13.5px; color:var(--dim); margin-top:3px; }
   .refresh { display:inline-flex; align-items:center; gap:7px; border:1px solid var(--line); background:#fff; color:#1565C0; font:600 13px 'Outfit',sans-serif; padding:9px 14px; border-radius:7px; cursor:pointer; }
   .refresh:hover { border-color:#1565C0; }
   .refresh svg { width:14px; height:14px; }
-
   .summary { display:grid; grid-template-columns:repeat(5,1fr); background:#fff; border:1px solid var(--line); border-radius:10px; margin:22px 0 18px; }
+  .summary.s4 { grid-template-columns:repeat(4,1fr); }
   .summary > div { padding:16px 20px; border-left:1px solid #eee; }
   .summary > div:first-child { border-left:none; }
   .summary .v { font-size:26px; font-weight:700; line-height:1.1; color:var(--text); font-variant-numeric:tabular-nums; }
   .summary .v.blue { color:#1565C0; }
+  .summary .v.warn { color:var(--warn); }
   .summary .l { font-size:12.5px; color:var(--dim); margin-top:4px; }
-
-  .toolbar { display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-wrap:wrap; }
-  .search { flex:1; min-width:220px; position:relative; }
+  .search { position:relative; margin-bottom:16px; }
   .search svg { position:absolute; left:12px; top:50%; transform:translateY(-50%); width:15px; height:15px; color:#999; pointer-events:none; }
   .search input { width:100%; border:1px solid var(--line); border-radius:8px; padding:10px 12px 10px 36px; font:400 14px 'Outfit',sans-serif; color:var(--text); background:#fff; }
   .search input:focus { outline:none; border-color:#1565C0; box-shadow:0 0 0 3px rgba(21,101,192,.12); }
-  .seg { display:flex; background:#fff; border:1px solid var(--line); border-radius:8px; padding:3px; }
-  .seg button { border:none; background:none; font:600 13px 'Outfit',sans-serif; color:var(--dim); padding:7px 13px; border-radius:6px; cursor:pointer; white-space:nowrap; }
-  .seg button:hover { color:#1565C0; }
-  .seg button.on { background:#1565C0; color:#fff; }
+  .nores { padding:34px 20px; text-align:center; color:var(--dim); font-size:14px; background:#fff; border:1px solid var(--line); border-radius:10px; }
 
-  .htable { background:#fff; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
-  .hrow { display:grid; grid-template-columns:minmax(0,1fr) 170px 170px 20px; align-items:center; gap:18px; padding:14px 20px; border-top:1px solid #eee; cursor:pointer; }
-  .hrow:hover { background:#f7faff; }
-  .hrow.open { background:var(--soft); }
-  .hhead { font-size:12.5px; font-weight:600; color:var(--dim); background:#f7f8fa; cursor:default; border-top:none; padding-top:11px; padding-bottom:11px; }
-  .hhead:hover { background:#f7f8fa; }
-  .ht { font-size:14.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .hm { display:flex; gap:14px; margin-top:3px; font-size:12.5px; color:var(--dim); }
-  .hm b { font-weight:500; color:#555; }
-  .hd { font-size:13px; color:#555; font-variant-numeric:tabular-nums; }
-  .pill { display:inline-flex; align-items:center; gap:7px; padding:5px 11px; border-radius:999px; font-size:13px; font-weight:600; }
-  .pill i { font-style:normal; display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:20px; padding:0 5px; border-radius:999px; font-size:12px; }
-  .pill.ok { background:var(--soft); color:#1565C0; }
-  .pill.ok i { background:#1565C0; color:#fff; }
-  .pill.zero { background:#f2f2f2; color:#888; }
-  .pill.zero i { background:#cfcfcf; color:#fff; }
-  .pill.nf { background:#fff3e0; color:#a35c00; }
-  .pill.nf svg { width:13px; height:13px; }
-  .nfnote { display:flex; gap:12px; align-items:flex-start; background:#fff; border:1px solid #f3d9b1; border-radius:8px; padding:14px 16px; font-size:13.5px; color:#5c4a33; max-width:560px; }
-  .nfnote svg { width:18px; height:18px; color:#a35c00; flex-shrink:0; margin-top:1px; }
-  .nfnote b { display:block; color:var(--text); font-weight:600; margin-bottom:2px; }
+  /* History: days */
+  .days { display:flex; flex-direction:column; gap:16px; }
+  .day { background:#fff; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  .day-h { display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; padding:15px 20px 13px; border-bottom:1px solid #eee; }
+  .day-d { font-size:16.5px; font-weight:700; }
+  .day-t { font-size:13px; color:var(--dim); font-variant-numeric:tabular-nums; }
+  .bk { display:grid; grid-template-columns:auto minmax(0,1fr) 18px; gap:14px; align-items:center; padding:12px 20px; cursor:pointer; border-top:1px solid #f0f0f0; }
+  .day-h + .bk { border-top:none; }
+  .bk:hover { background:#f7faff; }
+  .bk.open { background:var(--soft); }
+  .chip { min-width:36px; height:30px; padding:0 8px; border-radius:7px; font-size:15px; font-weight:700; display:flex; align-items:center; justify-content:center; font-variant-numeric:tabular-nums; }
+  .chip.ok { background:var(--soft); color:#1565C0; }
+  .bk.open .chip.ok { background:#1565C0; color:#fff; }
+  .chip.zero { background:#f1f1f1; color:#777; }
+  .chip.nf { background:var(--warnbg); color:var(--warn); }
+  .bk-txt { font-size:14.5px; color:var(--text); }
+  .bk-txt b { font-weight:600; }
   .chev { width:16px; height:16px; color:#aaa; transition:transform .18s; }
-  .hrow.open .chev { transform:rotate(90deg); color:#1565C0; }
-  .hdetail { display:none; padding:6px 20px 22px; background:var(--soft); }
-  .hdetail.open { display:block; }
+  .open > .chev { transform:rotate(90deg); color:#1565C0; }
+  .bk-list { display:none; background:#f8fafd; border-top:1px solid #e8edf4; }
+  .bk-list.open { display:block; }
+  .pr { display:grid; grid-template-columns:170px minmax(0,1fr) 54px 18px; gap:14px; align-items:center; padding:10px 20px 10px 70px; cursor:pointer; border-top:1px solid #edf1f6; }
+  .pr:first-child { border-top:none; }
+  .pr:hover { background:#eef4fc; }
+  .pr.open { background:#e6effb; }
+  .pr-sku { font-size:13.5px; font-weight:600; color:var(--text); font-variant-numeric:tabular-nums; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .pr-title { font-size:13.5px; color:#59626d; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .pr-time { font-size:12.5px; color:var(--dim); text-align:right; font-variant-numeric:tabular-nums; }
+  .pr-img { display:none; padding:6px 20px 20px 70px; background:#e6effb; }
+  .pr-img.open { display:block; }
   .dlabel { font-size:13px; font-weight:600; color:var(--text); margin:6px 0 12px; }
   .dlabel span { font-weight:400; color:var(--dim); }
-  .thumbs { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:12px; }
+  .thumbs { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
   .thumb { display:block; background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; position:relative; }
   .thumb:hover { border-color:#1565C0; }
-  .thumb .iw { height:170px; display:flex; align-items:center; justify-content:center; padding:10px; }
+  .thumb .iw { height:150px; display:flex; align-items:center; justify-content:center; padding:10px; }
   .thumb img { max-width:100%; max-height:100%; object-fit:contain; }
   .thumb .tag { position:absolute; top:8px; left:8px; background:#1565C0; color:#fff; font-size:11.5px; font-weight:600; padding:3px 8px; border-radius:5px; }
   .thumb .pos { position:absolute; top:8px; right:8px; background:#fff; border:1px solid var(--line); color:#666; font-size:11.5px; font-weight:600; padding:2px 7px; border-radius:5px; }
   .thumb.dim img { opacity:.45; filter:grayscale(1); }
-  .nores { padding:34px 20px; text-align:center; color:var(--dim); font-size:14px; border-top:1px solid #eee; }
+  .nfnote { display:flex; gap:12px; align-items:flex-start; background:#fff; border:1px solid #f3d9b1; border-radius:8px; padding:14px 16px; font-size:13.5px; color:#5c4a33; max-width:560px; }
+  .nfnote svg { width:18px; height:18px; color:var(--warn); flex-shrink:0; margin-top:1px; }
+  .nfnote b { display:block; color:var(--text); font-weight:600; margin-bottom:2px; }
+
+  /* All products: distribution */
+  .dist { background:#fff; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  .drow { display:grid; grid-template-columns:120px minmax(0,1fr) 100px 64px; gap:18px; align-items:center; padding:13px 20px; border-top:1px solid #eee; }
+  .drow.head { border-top:none; background:#f7f8fa; font-size:12.5px; font-weight:600; color:var(--dim); padding-top:11px; padding-bottom:11px; }
+  .drow .lab { font-size:14.5px; font-weight:600; }
+  .drow .lab.warn { color:var(--warn); }
+  .bar { height:10px; background:#eef2f7; border-radius:99px; overflow:hidden; }
+  .bar span { display:block; height:100%; background:#1565C0; border-radius:99px; min-width:3px; }
+  .bar.warn span { background:#e08a1e; }
+  .drow .cnt { text-align:right; font-size:15px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .drow .pct { text-align:right; font-size:13px; color:var(--dim); font-variant-numeric:tabular-nums; }
+  .drow.head .cnt, .drow.head .pct { font-size:12.5px; font-weight:600; }
+  .counted { font-size:12.5px; color:var(--dim); margin-top:12px; }
 
   @media (prefers-reduced-motion:reduce){ * { transition:none !important; } }
   @media (max-width:860px){
-    .summary { grid-template-columns:repeat(2,1fr); }
+    .summary, .summary.s4 { grid-template-columns:repeat(2,1fr); }
     .summary > div:nth-child(odd) { border-left:none; }
     .summary > div:nth-child(n+3) { border-top:1px solid #eee; }
-    .summary > div:last-child { grid-column:1 / -1; }
-    .hrow { grid-template-columns:minmax(0,1fr) auto 20px; }
-    .hrow .hd, .hhead .hd { display:none; }
+    .summary:not(.s4) > div:last-child { grid-column:1 / -1; }
+    .pr { grid-template-columns:minmax(0,1fr) 18px; padding-left:20px; }
+    .pr .pr-title, .pr .pr-time { display:none; }
+    .pr-img { padding-left:20px; }
+    .drow { grid-template-columns:90px minmax(0,1fr) 70px; }
+    .drow .pct { display:none; }
   }
-  @media (max-width:700px){ aside{width:66px} aside .logo, #list button .lbl, #prog, #tabs .lbl, #hside{display:none} #tabs{flex-direction:column; margin:12px 8px} #bar{left:66px} main{padding:20px 16px 100px} }
+  @media (max-width:700px){ aside{width:66px} aside .logo, #list button .lbl, #prog, #tabs .lbl, #hside{display:none} #tabs{margin:12px 8px} #tabs button{justify-content:center} #bar{left:66px} main{padding:20px 16px 100px} }
 </style>
 </head>
 <body>
 <aside>
   <div class="logo"><img style="width:100%; margin: auto;" src="https://abedtahan.com/cdn/shop/files/AT_Logo_400x200_Transparent.png?v=1732612010&amp;width=250"><span id="batchlabel" style="display:block;margin-top:8px">Loading...</span></div>
-  <div id="tabs">
+  <nav id="tabs">
     <button id="tab-review" class="on" onclick="setView('review')" title="Review">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       <span class="lbl">Review</span>
@@ -157,14 +175,19 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>
       <span class="lbl">History</span>
     </button>
-  </div>
+    <button id="tab-products" onclick="setView('products')" title="All products">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>
+      <span class="lbl">All products</span>
+    </button>
+  </nav>
   <div id="list"></div>
-  <div id="hside">Every reviewed or not-found product, newest first. Click a row to see the images that went to Shopify.</div>
+  <div id="hside"></div>
   <div id="prog"><span id="ptxt">0 / 0 reviewed</span><div class="track"><div class="fill" id="pfill"></div></div></div>
 </aside>
 <main>
   <div id="review"><div class="empty">Loading pending items…</div></div>
-  <div id="history" style="display:none"></div>
+  <div id="history" class="page" style="display:none"></div>
+  <div id="products" class="page" style="display:none"></div>
 </main>
 <div id="bar" style="display:none">
   <button onclick="submitAll()">Confirm & Upload to Shopify</button>
@@ -172,25 +195,25 @@
 </div>
 <script>
 // ---- Point these at your n8n instance ----
-const PENDING_URL = "https://n8n.srv838782.hstgr.cloud/webhook/image-review-pending";
-const SUBMIT_URL  = "https://n8n.srv838782.hstgr.cloud/webhook/image-review-submit";
-const HISTORY_URL = "https://n8n.srv838782.hstgr.cloud/webhook/image-review-history";
+const PENDING_URL  = "https://n8n.srv838782.hstgr.cloud/webhook/image-review-pending";
+const SUBMIT_URL   = "https://n8n.srv838782.hstgr.cloud/webhook/image-review-submit";
+const HISTORY_URL  = "https://n8n.srv838782.hstgr.cloud/webhook/image-review-history";
+const PRODUCTS_URL = "https://n8n.srv838782.hstgr.cloud/webhook/image-review-products";
 // -------------------------------------------
 
 let DATA = [];
-let NOTFOUND = [];
 const sel = {};
 const rejected = new Set();
 const main = document.getElementById('review');
 const list = document.getElementById('list');
 let view = 'review';
 
+// ================= Review =================
 async function load() {
   try {
     const res = await fetch(PENDING_URL);
     const json = await res.json();
     DATA = (json.products || []).map((p, i) => ({ ...p, n: i + 1 }));
-    NOTFOUND = json.notFound || [];
     rejected.clear();
     DATA.forEach(p => { sel[p.k] = { approved: new Set(), main: null }; });
     render();
@@ -205,9 +228,10 @@ function render() {
   if (!DATA.length) {
     main.innerHTML = '<div class="empty">Nothing pending right now — all caught up.</div>';
     document.getElementById('bar').style.display = 'none';
+    refreshProgress();
     return;
   }
-  document.getElementById('bar').style.display = (DATA.length && view === 'review') ? 'flex' : 'none';
+  document.getElementById('bar').style.display = view === 'review' ? 'flex' : 'none';
   main.innerHTML = '';
 
   DATA.forEach((p, i) => {
@@ -255,7 +279,7 @@ function render() {
     });
   });
 
-  if (DATA.length) activate(DATA[0].k);
+  activate(DATA[0].k);
   refreshProgress();
 }
 
@@ -332,48 +356,98 @@ async function submitAll() {
     });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     document.getElementById('exnote').textContent = 'Sent to Shopify. Reloading...';
+    HIST_LOADED = false;
     setTimeout(load, 1200);
   } catch (e) {
     document.getElementById('exnote').textContent = 'Failed to submit: ' + e;
   }
 }
 
-// ================= History =================
-let HIST = [];
-let hFilter = 'all';
-let hQuery = '';
-const hist = document.getElementById('history');
-
+// ================= Shared helpers =================
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
-const fmtDate = d => {
-  if (!d) return '—';
+const num = n => Number(n || 0).toLocaleString('en-US');
+const plural = (n, one, many) => `${num(n)} ${n === 1 ? one : many}`;
+const CHEV = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>';
+const REFRESH_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>';
+const NF_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/><path d="M8.5 11h5"/></svg>';
+
+function fmtTime(d) {
   const x = new Date(d);
-  if (isNaN(x)) return '—';
-  return x.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) + ', ' +
-         x.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+  return isNaN(x) ? '' : x.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+}
+function dayKey(d) {
+  const x = new Date(d);
+  if (!d || isNaN(x)) return 'unknown';
+  return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`;
+}
+function dayLabel(key) {
+  if (key === 'unknown') return 'Unknown date';
+  const [y, m, d] = key.split('-').map(Number);
+  const x = new Date(y, m - 1, d);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const diff = Math.round((today - x) / 86400000);
+  const base = x.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+  if (diff === 0) return 'Today, ' + base;
+  if (diff === 1) return 'Yesterday, ' + base;
+  return base;
+}
+function ago(d) {
+  const m = Math.round((Date.now() - new Date(d)) / 60000);
+  if (isNaN(m)) return '';
+  if (m < 1) return 'just now';
+  if (m < 60) return m + ' min ago';
+  const h = Math.round(m / 60);
+  if (h < 24) return h + (h === 1 ? ' hour ago' : ' hours ago');
+  return new Date(d).toLocaleDateString('en-GB', { day:'numeric', month:'short' }) + ' at ' + fmtTime(d);
+}
+function toggleOpen(el) {
+  const open = !el.classList.contains('open');
+  el.classList.toggle('open', open);
+  el.setAttribute('aria-expanded', open);
+  el.nextElementSibling.classList.toggle('open', open);
+}
+function keyToggle(e, el) {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleOpen(el); }
+}
+
+// ================= Views =================
+const SIDE_TEXT = {
+  history: 'Reviewed products grouped by day. Click a line to see its SKUs, then a SKU to see its images.',
+  products: 'Active products on abedtahan.com, counted by how many images each one has.'
 };
 
 function setView(v) {
   view = v;
-  document.getElementById('tab-review').classList.toggle('on', v === 'review');
-  document.getElementById('tab-history').classList.toggle('on', v === 'history');
-  document.getElementById('review').style.display = v === 'review' ? '' : 'none';
-  document.getElementById('history').style.display = v === 'history' ? '' : 'none';
+  ['review', 'history', 'products'].forEach(x => {
+    document.getElementById('tab-' + x).classList.toggle('on', x === v);
+    document.getElementById(x).style.display = x === v ? '' : 'none';
+  });
   list.style.display = v === 'review' ? '' : 'none';
   document.getElementById('prog').style.display = v === 'review' ? '' : 'none';
-  document.getElementById('hside').style.display = v === 'history' ? 'block' : 'none';
+  const side = document.getElementById('hside');
+  side.style.display = v === 'review' ? 'none' : 'block';
+  side.textContent = SIDE_TEXT[v] || '';
   document.getElementById('bar').style.display = (v === 'review' && DATA.length) ? 'flex' : 'none';
   window.scrollTo(0, 0);
   if (v === 'history') loadHistory();
+  if (v === 'products') loadProducts(false);
 }
 
-async function loadHistory() {
+// ================= History =================
+let HIST = [];
+let HIST_LOADED = false;
+let hQuery = '';
+const hist = document.getElementById('history');
+
+async function loadHistory(force) {
+  if (HIST_LOADED && !force) { renderHistory(); return; }
   hist.innerHTML = '<div class="empty">Loading history…</div>';
   try {
     const res = await fetch(HISTORY_URL);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
     HIST = json.history || [];
+    HIST_LOADED = true;
     renderHistory();
   } catch (e) {
     hist.innerHTML = `<div class="empty">Couldn't load history. Check HISTORY_URL and that the n8n workflow is active.<br><br>${esc(e)}</div>`;
@@ -391,109 +465,174 @@ function renderHistory() {
     <div class="h-head">
       <div>
         <h1>Upload history</h1>
-        <div class="h-sub">Reviewed products and the images sent to Shopify</div>
+        <div class="h-sub">What was uploaded to Shopify, day by day</div>
       </div>
-      <button class="refresh" onclick="loadHistory()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
-        Refresh
-      </button>
+      <button class="refresh" onclick="loadHistory(true)">${REFRESH_ICON}Refresh</button>
     </div>
     <div class="summary">
-      <div><div class="v">${total}</div><div class="l">Products reviewed</div></div>
-      <div><div class="v blue">${imgs}</div><div class="l">Images uploaded</div></div>
-      <div><div class="v">${withImgs}</div><div class="l">Products with images</div></div>
-      <div><div class="v">${none}</div><div class="l">No image chosen</div></div>
-      <div><div class="v">${nf}</div><div class="l">Not found online</div></div>
+      <div><div class="v">${num(total)}</div><div class="l">Products reviewed</div></div>
+      <div><div class="v blue">${num(imgs)}</div><div class="l">Images uploaded</div></div>
+      <div><div class="v">${num(withImgs)}</div><div class="l">Products with images</div></div>
+      <div><div class="v">${num(none)}</div><div class="l">No image uploaded</div></div>
+      <div><div class="v warn">${num(nf)}</div><div class="l">Not found online</div></div>
     </div>
-    <div class="toolbar">
-      <div class="search">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input id="hsearch" type="search" placeholder="Search by product, SKU or vendor" value="${esc(hQuery)}">
-      </div>
-      <div class="seg" id="hseg">
-        <button data-f="all">All</button>
-        <button data-f="with">With images</button>
-        <button data-f="none">No image chosen</button>
-        <button data-f="nf">Not found</button>
-      </div>
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="hsearch" type="search" placeholder="Search by SKU, product or vendor" value="${esc(hQuery)}">
     </div>
-    <div class="htable">
-      <div class="hrow hhead"><div>Product</div><div>Images chosen</div><div class="hd">Reviewed</div><div></div></div>
-      <div id="hrows"></div>
-    </div>`;
+    <div id="hdays"></div>`;
 
-  document.getElementById('hsearch').addEventListener('input', e => { hQuery = e.target.value; renderRows(); });
-  document.querySelectorAll('#hseg button').forEach(b => {
-    b.classList.toggle('on', b.dataset.f === hFilter);
-    b.onclick = () => {
-      hFilter = b.dataset.f;
-      document.querySelectorAll('#hseg button').forEach(x => x.classList.toggle('on', x === b));
-      renderRows();
-    };
-  });
-  renderRows();
+  document.getElementById('hsearch').addEventListener('input', e => { hQuery = e.target.value; renderDays(); });
+  renderDays();
 }
 
-function renderRows() {
+function bucketOf(p) {
+  if (p.notFound) return 'nf';
+  return String(p.chosen.length);
+}
+function bucketText(b, count) {
+  const prods = `<b>${plural(count, 'product', 'products')}</b>`;
+  if (b === 'nf') return `${prods} not found online`;
+  const n = Number(b);
+  if (n === 0) return `${prods} had no image uploaded`;
+  return `${prods} had ${plural(n, 'image', 'images')} uploaded`;
+}
+function bucketOrder(b) {
+  if (b === 'nf') return -2;
+  return Number(b) === 0 ? -1 : Number(b);
+}
+
+function renderDays() {
+  const box = document.getElementById('hdays');
+  if (!HIST.length) { box.innerHTML = '<div class="nores">No reviewed products yet. They appear here after you confirm a review.</div>'; return; }
+
   const q = hQuery.trim().toLowerCase();
-  const rows = HIST.filter(p => {
-    if (hFilter === 'with' && !p.chosen.length) return false;
-    if (hFilter === 'none' && (p.chosen.length || p.notFound)) return false;
-    if (hFilter === 'nf' && !p.notFound) return false;
-    if (!q) return true;
-    return [p.title, p.sku, p.vendor, p.k].some(v => String(v || '').toLowerCase().includes(q));
+  const rows = q
+    ? HIST.filter(p => [p.sku, p.title, p.vendor, p.k].some(v => String(v || '').toLowerCase().includes(q)))
+    : HIST;
+  if (!rows.length) { box.innerHTML = '<div class="nores">No products match this search.</div>'; return; }
+
+  // day -> bucket -> products
+  const days = {};
+  rows.forEach(p => {
+    const dk = dayKey(p.at);
+    (days[dk] = days[dk] || {})[bucketOf(p)] = (days[dk][bucketOf(p)] || []).concat(p);
   });
 
-  const box = document.getElementById('hrows');
-  if (!HIST.length) { box.innerHTML = '<div class="nores">No reviewed products yet. Products show up here after you confirm a review.</div>'; return; }
-  if (!rows.length) { box.innerHTML = '<div class="nores">No products match this search or filter.</div>'; return; }
+  const dayKeys = Object.keys(days).sort((a, b) => a === 'unknown' ? 1 : b === 'unknown' ? -1 : b.localeCompare(a));
 
-  box.innerHTML = rows.map(p => {
-    const n = p.chosen.length;
-    return `
-      <div class="hrow" tabindex="0" role="button" aria-expanded="false" onclick="toggleRow(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleRow(this)}">
-        <div>
-          <div class="ht">${esc(p.title || p.k)}</div>
-          <div class="hm"><span>SKU <b>${esc(p.sku || 'n/a')}</b></span><span>${esc(p.vendor || 'No vendor')}</span></div>
-        </div>
-        <div>${p.notFound
-          ? '<span class="pill nf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/><path d="M8.5 11h5"/></svg>Not found</span>'
-          : `<span class="pill ${n ? 'ok' : 'zero'}"><i>${n}</i>${n === 1 ? 'image' : 'images'} chosen</span>`}</div>
-        <div class="hd">${fmtDate(p.at)}</div>
-        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+  box.innerHTML = '<div class="days">' + dayKeys.map(dk => {
+    const buckets = days[dk];
+    const all = Object.values(buckets).flat();
+    const dayImgs = all.reduce((a, p) => a + p.chosen.length, 0);
+    const bKeys = Object.keys(buckets).sort((a, b) => bucketOrder(b) - bucketOrder(a));
+
+    return `<section class="day">
+      <div class="day-h">
+        <div class="day-d">${dayLabel(dk)}</div>
+        <div class="day-t">${plural(all.length, 'product', 'products')} reviewed, ${plural(dayImgs, 'image', 'images')} uploaded</div>
       </div>
-      <div class="hdetail">${detail(p)}</div>`;
-  }).join('');
+      ${bKeys.map(b => {
+        const prods = buckets[b].slice().sort((x, y) => new Date(y.at || 0) - new Date(x.at || 0));
+        const chipCls = b === 'nf' ? 'nf' : (Number(b) ? 'ok' : 'zero');
+        return `
+        <div class="bk" tabindex="0" role="button" aria-expanded="${q ? 'true' : 'false'}" ${q ? 'data-open' : ''} onclick="toggleOpen(this)" onkeydown="keyToggle(event,this)">
+          <span class="chip ${chipCls}">${b === 'nf' ? '?' : b}</span>
+          <span class="bk-txt">${bucketText(b, prods.length)}</span>
+          ${CHEV}
+        </div>
+        <div class="bk-list">${prods.map(p => `
+          <div class="pr" tabindex="0" role="button" aria-expanded="false" onclick="toggleOpen(this)" onkeydown="keyToggle(event,this)">
+            <span class="pr-sku">${esc(p.sku || 'No SKU')}</span>
+            <span class="pr-title">${esc(p.title || p.k)}</span>
+            <span class="pr-time">${fmtTime(p.at)}</span>
+            ${CHEV}
+          </div>
+          <div class="pr-img">${detail(p)}</div>`).join('')}
+        </div>`;
+      }).join('')}
+    </section>`;
+  }).join('') + '</div>';
+
+  // When searching, open matching buckets so results are visible
+  if (q) box.querySelectorAll('.bk[data-open]').forEach(el => { el.classList.add('open'); el.nextElementSibling.classList.add('open'); });
 }
 
 function detail(p) {
   if (p.notFound) {
-    return `<div class="nfnote">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/><path d="M8.5 11h5"/></svg>
+    return `<div class="nfnote">${NF_ICON}
       <div><b>No images found online</b>Search found nothing for this product. Ask the supplier for photos and add them in Shopify.</div>
     </div>`;
   }
   if (p.chosen.length) {
-    return `<div class="dlabel">Uploaded to Shopify <span>(${p.chosen.length} ${p.chosen.length === 1 ? 'image' : 'images'}, in upload order)</span></div>
+    return `<div class="dlabel">${esc(p.title || '')} <span>(${plural(p.chosen.length, 'image', 'images')}, in upload order)</span></div>
       <div class="thumbs">${p.chosen.map((u, i) => `
         <a class="thumb" href="${esc(u)}" target="_blank" rel="noopener">
           ${i === 0 ? '<span class="tag">Main</span>' : ''}<span class="pos">${i + 1}</span>
           <div class="iw"><img loading="lazy" src="${esc(u)}" alt=""></div>
         </a>`).join('')}</div>`;
   }
-  if (!p.others.length) return '<div class="dlabel">No images chosen <span>(no candidates on record)</span></div>';
-  return `<div class="dlabel">No images chosen <span>(candidates you rejected)</span></div>
+  if (!p.others.length) return '<div class="dlabel">No image uploaded <span>(no candidates on record)</span></div>';
+  return `<div class="dlabel">No image uploaded <span>(candidates you rejected)</span></div>
     <div class="thumbs">${p.others.map(u => `
       <a class="thumb dim" href="${esc(u)}" target="_blank" rel="noopener">
         <div class="iw"><img loading="lazy" src="${esc(u)}" alt=""></div>
       </a>`).join('')}</div>`;
 }
 
-function toggleRow(el) {
-  const open = !el.classList.contains('open');
-  el.classList.toggle('open', open);
-  el.setAttribute('aria-expanded', open);
-  el.nextElementSibling.classList.toggle('open', open);
+// ================= All products =================
+let PROD = null;
+const prodEl = document.getElementById('products');
+
+async function loadProducts(force) {
+  if (PROD && !force) { renderProducts(); return; }
+  prodEl.innerHTML = `<div class="empty">Counting images on every active product… The first count can take up to a minute.</div>`;
+  try {
+    const res = await fetch(PRODUCTS_URL + (force ? '?refresh=1' : ''));
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    PROD = await res.json();
+    renderProducts();
+  } catch (e) {
+    prodEl.innerHTML = `<div class="empty">Couldn't count products. Check PRODUCTS_URL and that the n8n workflow is active.<br><br>${esc(e)}</div>`;
+  }
+}
+
+function renderProducts() {
+  const buckets = (PROD.buckets || []).slice().sort((a, b) => a.images - b.images);
+  const total = PROD.total || 0;
+  const totalImgs = PROD.totalImages || 0;
+  const zero = (buckets.find(b => b.images === 0) || {}).products || 0;
+  const max = Math.max(1, ...buckets.map(b => b.products));
+  const avg = total ? (totalImgs / total).toFixed(1) : '0';
+
+  prodEl.innerHTML = `
+    <div class="h-head">
+      <div>
+        <h1>All products</h1>
+        <div class="h-sub">Active products on the website by number of images</div>
+      </div>
+      <button class="refresh" onclick="loadProducts(true)">${REFRESH_ICON}Recount</button>
+    </div>
+    <div class="summary s4">
+      <div><div class="v">${num(total)}</div><div class="l">Products on website</div></div>
+      <div><div class="v blue">${num(totalImgs)}</div><div class="l">Images in total</div></div>
+      <div><div class="v">${avg}</div><div class="l">Images per product</div></div>
+      <div><div class="v warn">${num(zero)}</div><div class="l">Products with no images</div></div>
+    </div>
+    ${buckets.length ? `<div class="dist">
+      <div class="drow head"><div>Images</div><div>Share of products</div><div class="cnt">Products</div><div class="pct">%</div></div>
+      ${buckets.map(b => {
+        const warn = b.images === 0;
+        const pct = total ? (b.products / total * 100) : 0;
+        return `<div class="drow">
+          <div class="lab ${warn ? 'warn' : ''}">${b.images === 0 ? 'No images' : plural(b.images, 'image', 'images')}</div>
+          <div class="bar ${warn ? 'warn' : ''}"><span style="width:${(b.products / max * 100).toFixed(1)}%"></span></div>
+          <div class="cnt">${num(b.products)}</div>
+          <div class="pct">${pct < 0.1 && pct > 0 ? '<0.1' : pct.toFixed(1)}%</div>
+        </div>`;
+      }).join('')}
+    </div>` : '<div class="nores">No active products found.</div>'}
+    <div class="counted">${PROD.updatedAt ? 'Counted ' + ago(PROD.updatedAt) + '. Counts refresh automatically every 6 hours, or click Recount.' : ''}</div>`;
 }
 
 load();
