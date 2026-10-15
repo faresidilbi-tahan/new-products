@@ -8,12 +8,22 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root { --ink:#1565C0; --line:#dcdcdc; --dim:#777; --bg:#fafafa; }
+  :root { --ink:#1565C0; --line:#dcdcdc; --dim:#777; --bg:#fafafa; --text:#1d2733; --soft:#eef4fc; }
   * { box-sizing:border-box; margin:0; }
   body { font-family:'Outfit',-apple-system,"Segoe UI",Roboto,Arial,sans-serif; background:var(--bg); color:var(--ink); display:flex; min-height:100vh; }
   aside { width:262px; background:#1565C0; color:#fff; flex-shrink:0; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; }
   aside .logo { padding:20px 18px 12px; font-size:13px; font-weight:700; }
   .logo img { width:170px !important; }
+
+  /* Tabs */
+  #tabs { display:flex; gap:4px; margin:4px 12px 10px; padding:4px; background:rgba(255,255,255,.14); border-radius:8px; }
+  #tabs button { flex:1; display:flex; align-items:center; justify-content:center; gap:7px; border:none; background:none; color:#dbe7f7; font:600 13px 'Outfit',sans-serif; padding:8px 6px; border-radius:6px; cursor:pointer; }
+  #tabs button:hover { color:#fff; }
+  #tabs button.on { background:#fff; color:#1565C0; }
+  #tabs svg { width:15px; height:15px; flex-shrink:0; }
+  #tabs button:focus-visible, .hrow:focus-visible, .seg button:focus-visible, .refresh:focus-visible { outline:2px solid #1565C0; outline-offset:2px; }
+  #tabs button:focus-visible { outline-color:#fff; }
+
   #list { flex:1; overflow-y:auto; padding:6px 10px 14px; }
   #list button { display:flex; align-items:center; gap:9px; width:100%; text-align:left; background:none; border:none; border-radius:6px; padding:9px 11px; font-size:13px; color:#ccc; cursor:pointer; margin-bottom:2px; }
   #list button:hover { background:#fff; color:#1565C0; }
@@ -28,7 +38,9 @@
   #prog { padding:13px 18px; border-top:1px solid #333; font-size:12px; color:#bbb; }
   #prog .track { height:6px; background:#333; border-radius:6px; overflow:hidden; margin-top:6px; }
   #prog .fill { height:100%; width:0%; background:#fff; border-radius:6px; transition:width .25s; }
-  main { flex:1; padding:24px 28px 100px; }
+  #hside { flex:1; padding:8px 18px; font-size:13px; color:#dbe7f7; line-height:1.5; display:none; }
+
+  main { flex:1; padding:24px 28px 100px; min-width:0; }
   .pane { display:none; }
   .pane.active { display:block; }
   .t { font-size:17px; font-weight:700; line-height:1.35; }
@@ -57,16 +69,97 @@
   #bar .n { font-size:12.5px; color:var(--dim); }
   table.nf td { padding:10px 12px; border-bottom:1px solid var(--line); font-size:13.5px; vertical-align:top; }
   .empty { padding:40px; color:var(--dim); font-size:14px; }
-  @media (max-width:700px){ aside{width:66px} aside .logo, #list button .lbl, #prog{display:none} #bar{left:66px} }
+
+  /* History */
+  #history { max-width:1080px; color:var(--text); }
+  .h-head { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .h-head h1 { font-size:24px; font-weight:700; letter-spacing:-.01em; color:var(--text); }
+  .h-sub { font-size:13.5px; color:var(--dim); margin-top:3px; }
+  .refresh { display:inline-flex; align-items:center; gap:7px; border:1px solid var(--line); background:#fff; color:#1565C0; font:600 13px 'Outfit',sans-serif; padding:9px 14px; border-radius:7px; cursor:pointer; }
+  .refresh:hover { border-color:#1565C0; }
+  .refresh svg { width:14px; height:14px; }
+
+  .summary { display:grid; grid-template-columns:repeat(4,1fr); background:#fff; border:1px solid var(--line); border-radius:10px; margin:22px 0 18px; }
+  .summary > div { padding:16px 20px; border-left:1px solid #eee; }
+  .summary > div:first-child { border-left:none; }
+  .summary .v { font-size:26px; font-weight:700; line-height:1.1; color:var(--text); font-variant-numeric:tabular-nums; }
+  .summary .v.blue { color:#1565C0; }
+  .summary .l { font-size:12.5px; color:var(--dim); margin-top:4px; }
+
+  .toolbar { display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-wrap:wrap; }
+  .search { flex:1; min-width:220px; position:relative; }
+  .search svg { position:absolute; left:12px; top:50%; transform:translateY(-50%); width:15px; height:15px; color:#999; pointer-events:none; }
+  .search input { width:100%; border:1px solid var(--line); border-radius:8px; padding:10px 12px 10px 36px; font:400 14px 'Outfit',sans-serif; color:var(--text); background:#fff; }
+  .search input:focus { outline:none; border-color:#1565C0; box-shadow:0 0 0 3px rgba(21,101,192,.12); }
+  .seg { display:flex; background:#fff; border:1px solid var(--line); border-radius:8px; padding:3px; }
+  .seg button { border:none; background:none; font:600 13px 'Outfit',sans-serif; color:var(--dim); padding:7px 13px; border-radius:6px; cursor:pointer; white-space:nowrap; }
+  .seg button:hover { color:#1565C0; }
+  .seg button.on { background:#1565C0; color:#fff; }
+
+  .htable { background:#fff; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  .hrow { display:grid; grid-template-columns:minmax(0,1fr) 170px 170px 20px; align-items:center; gap:18px; padding:14px 20px; border-top:1px solid #eee; cursor:pointer; }
+  .hrow:hover { background:#f7faff; }
+  .hrow.open { background:var(--soft); }
+  .hhead { font-size:12.5px; font-weight:600; color:var(--dim); background:#f7f8fa; cursor:default; border-top:none; padding-top:11px; padding-bottom:11px; }
+  .hhead:hover { background:#f7f8fa; }
+  .ht { font-size:14.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .hm { display:flex; gap:14px; margin-top:3px; font-size:12.5px; color:var(--dim); }
+  .hm b { font-weight:500; color:#555; }
+  .hd { font-size:13px; color:#555; font-variant-numeric:tabular-nums; }
+  .pill { display:inline-flex; align-items:center; gap:7px; padding:5px 11px; border-radius:999px; font-size:13px; font-weight:600; }
+  .pill i { font-style:normal; display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:20px; padding:0 5px; border-radius:999px; font-size:12px; }
+  .pill.ok { background:var(--soft); color:#1565C0; }
+  .pill.ok i { background:#1565C0; color:#fff; }
+  .pill.zero { background:#f2f2f2; color:#888; }
+  .pill.zero i { background:#cfcfcf; color:#fff; }
+  .chev { width:16px; height:16px; color:#aaa; transition:transform .18s; }
+  .hrow.open .chev { transform:rotate(90deg); color:#1565C0; }
+  .hdetail { display:none; padding:6px 20px 22px; background:var(--soft); }
+  .hdetail.open { display:block; }
+  .dlabel { font-size:13px; font-weight:600; color:var(--text); margin:6px 0 12px; }
+  .dlabel span { font-weight:400; color:var(--dim); }
+  .thumbs { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:12px; }
+  .thumb { display:block; background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; position:relative; }
+  .thumb:hover { border-color:#1565C0; }
+  .thumb .iw { height:170px; display:flex; align-items:center; justify-content:center; padding:10px; }
+  .thumb img { max-width:100%; max-height:100%; object-fit:contain; }
+  .thumb .tag { position:absolute; top:8px; left:8px; background:#1565C0; color:#fff; font-size:11.5px; font-weight:600; padding:3px 8px; border-radius:5px; }
+  .thumb .pos { position:absolute; top:8px; right:8px; background:#fff; border:1px solid var(--line); color:#666; font-size:11.5px; font-weight:600; padding:2px 7px; border-radius:5px; }
+  .thumb.dim img { opacity:.45; filter:grayscale(1); }
+  .nores { padding:34px 20px; text-align:center; color:var(--dim); font-size:14px; border-top:1px solid #eee; }
+
+  @media (prefers-reduced-motion:reduce){ * { transition:none !important; } }
+  @media (max-width:860px){
+    .summary { grid-template-columns:repeat(2,1fr); }
+    .summary > div:nth-child(3) { border-left:none; }
+    .summary > div:nth-child(n+3) { border-top:1px solid #eee; }
+    .hrow { grid-template-columns:minmax(0,1fr) auto 20px; }
+    .hrow .hd, .hhead .hd { display:none; }
+  }
+  @media (max-width:700px){ aside{width:66px} aside .logo, #list button .lbl, #prog, #tabs .lbl, #hside{display:none} #tabs{flex-direction:column; margin:12px 8px} #bar{left:66px} main{padding:20px 16px 100px} }
 </style>
 </head>
 <body>
 <aside>
   <div class="logo"><img style="width:100%; margin: auto;" src="https://abedtahan.com/cdn/shop/files/AT_Logo_400x200_Transparent.png?v=1732612010&amp;width=250"><span id="batchlabel" style="display:block;margin-top:8px">Loading...</span></div>
+  <div id="tabs">
+    <button id="tab-review" class="on" onclick="setView('review')" title="Review">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span class="lbl">Review</span>
+    </button>
+    <button id="tab-history" onclick="setView('history')" title="History">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>
+      <span class="lbl">History</span>
+    </button>
+  </div>
   <div id="list"></div>
+  <div id="hside">Every reviewed product, newest first. Click a row to see the images that went to Shopify.</div>
   <div id="prog"><span id="ptxt">0 / 0 reviewed</span><div class="track"><div class="fill" id="pfill"></div></div></div>
 </aside>
-<main id="main"><div class="empty">Loading pending items…</div></main>
+<main>
+  <div id="review"><div class="empty">Loading pending items…</div></div>
+  <div id="history" style="display:none"></div>
+</main>
 <div id="bar" style="display:none">
   <button onclick="submitAll()">Confirm & Upload to Shopify</button>
   <span class="n" id="exnote">Click images to approve · "Main" = cover photo · "None good" if all bad</span>
@@ -75,14 +168,16 @@
 // ---- Point these at your n8n instance ----
 const PENDING_URL = "https://n8n.srv838782.hstgr.cloud/webhook/image-review-pending";
 const SUBMIT_URL  = "https://n8n.srv838782.hstgr.cloud/webhook/image-review-submit";
+const HISTORY_URL = "https://n8n.srv838782.hstgr.cloud/webhook/image-review-history";
 // -------------------------------------------
 
 let DATA = [];
 let NOTFOUND = [];
 const sel = {};
 const rejected = new Set();
-const main = document.getElementById('main');
+const main = document.getElementById('review');
 const list = document.getElementById('list');
+let view = 'review';
 
 async function load() {
   try {
@@ -90,6 +185,7 @@ async function load() {
     const json = await res.json();
     DATA = (json.products || []).map((p, i) => ({ ...p, n: i + 1 }));
     NOTFOUND = json.notFound || [];
+    rejected.clear();
     DATA.forEach(p => { sel[p.k] = { approved: new Set(), main: null }; });
     render();
   } catch (e) {
@@ -99,12 +195,13 @@ async function load() {
 
 function render() {
   document.getElementById('batchlabel').textContent = DATA.length + ' pending';
+  list.innerHTML = '';
   if (!DATA.length && !NOTFOUND.length) {
     main.innerHTML = '<div class="empty">Nothing pending right now — all caught up.</div>';
+    document.getElementById('bar').style.display = 'none';
     return;
   }
-  document.getElementById('bar').style.display = DATA.length ? 'flex' : 'none';
-  list.innerHTML = '';
+  document.getElementById('bar').style.display = (DATA.length && view === 'review') ? 'flex' : 'none';
   main.innerHTML = '';
 
   DATA.forEach((p, i) => {
@@ -170,6 +267,7 @@ function render() {
   });
 
   if (DATA.length) activate(DATA[0].k);
+  else if (NOTFOUND.length) activate('nf');
   refreshProgress();
 }
 
@@ -213,15 +311,28 @@ function setMain(e, k, l) {
 }
 
 async function submitAll() {
-  const approved = {}, skipped = [];
+  const approved = {}, skipped = [], statuses = [];
   DATA.forEach(p => {
-    if (rejected.has(p.k)) return;
+    if (rejected.has(p.k)) {
+      p.cands.forEach(c => statuses.push({ rowId: c.rowId, status: 'rejected' }));
+      return;
+    }
     const s = sel[p.k];
     if (!s.approved.size) { skipped.push(p.k); return; }
     const mainL = s.main || [...s.approved][0];
     approved[p.k] = [mainL, ...[...s.approved].filter(l => l !== mainL)].map(l => p.cands.find(c => c.l === l).url);
+    p.cands.forEach(c => statuses.push({
+      rowId: c.rowId,
+      status: c.l === mainL ? 'main' : (s.approved.has(c.l) ? 'approved' : 'unchosen')
+    }));
   });
-  const payload = { approved, rejected: [...rejected], skipped };
+
+  if (!statuses.length) {
+    document.getElementById('exnote').textContent = 'Nothing reviewed yet — approve images or mark "None are good" first.';
+    return;
+  }
+
+  const payload = { approved, rejected: [...rejected], skipped, statuses };
 
   document.getElementById('exnote').textContent = 'Uploading to Shopify…';
   try {
@@ -236,6 +347,152 @@ async function submitAll() {
   } catch (e) {
     document.getElementById('exnote').textContent = 'Failed to submit: ' + e;
   }
+}
+
+// ================= History =================
+let HIST = [];
+let hFilter = 'all';
+let hQuery = '';
+const hist = document.getElementById('history');
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+const fmtDate = d => {
+  if (!d) return '—';
+  const x = new Date(d);
+  if (isNaN(x)) return '—';
+  return x.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) + ', ' +
+         x.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+};
+
+function setView(v) {
+  view = v;
+  document.getElementById('tab-review').classList.toggle('on', v === 'review');
+  document.getElementById('tab-history').classList.toggle('on', v === 'history');
+  document.getElementById('review').style.display = v === 'review' ? '' : 'none';
+  document.getElementById('history').style.display = v === 'history' ? '' : 'none';
+  list.style.display = v === 'review' ? '' : 'none';
+  document.getElementById('prog').style.display = v === 'review' ? '' : 'none';
+  document.getElementById('hside').style.display = v === 'history' ? 'block' : 'none';
+  document.getElementById('bar').style.display = (v === 'review' && DATA.length) ? 'flex' : 'none';
+  window.scrollTo(0, 0);
+  if (v === 'history') loadHistory();
+}
+
+async function loadHistory() {
+  hist.innerHTML = '<div class="empty">Loading history…</div>';
+  try {
+    const res = await fetch(HISTORY_URL);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    HIST = json.history || [];
+    renderHistory();
+  } catch (e) {
+    hist.innerHTML = `<div class="empty">Couldn't load history. Check HISTORY_URL and that the n8n workflow is active.<br><br>${esc(e)}</div>`;
+  }
+}
+
+function renderHistory() {
+  const total = HIST.length;
+  const withImgs = HIST.filter(p => p.chosen.length).length;
+  const imgs = HIST.reduce((a, p) => a + p.chosen.length, 0);
+  const none = total - withImgs;
+
+  hist.innerHTML = `
+    <div class="h-head">
+      <div>
+        <h1>Upload history</h1>
+        <div class="h-sub">Reviewed products and the images sent to Shopify</div>
+      </div>
+      <button class="refresh" onclick="loadHistory()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+        Refresh
+      </button>
+    </div>
+    <div class="summary">
+      <div><div class="v">${total}</div><div class="l">Products reviewed</div></div>
+      <div><div class="v blue">${imgs}</div><div class="l">Images uploaded</div></div>
+      <div><div class="v">${withImgs}</div><div class="l">Products with images</div></div>
+      <div><div class="v">${none}</div><div class="l">No image chosen</div></div>
+    </div>
+    <div class="toolbar">
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="hsearch" type="search" placeholder="Search by product, SKU or vendor" value="${esc(hQuery)}">
+      </div>
+      <div class="seg" id="hseg">
+        <button data-f="all">All</button>
+        <button data-f="with">With images</button>
+        <button data-f="none">No image chosen</button>
+      </div>
+    </div>
+    <div class="htable">
+      <div class="hrow hhead"><div>Product</div><div>Images chosen</div><div class="hd">Reviewed</div><div></div></div>
+      <div id="hrows"></div>
+    </div>`;
+
+  document.getElementById('hsearch').addEventListener('input', e => { hQuery = e.target.value; renderRows(); });
+  document.querySelectorAll('#hseg button').forEach(b => {
+    b.classList.toggle('on', b.dataset.f === hFilter);
+    b.onclick = () => {
+      hFilter = b.dataset.f;
+      document.querySelectorAll('#hseg button').forEach(x => x.classList.toggle('on', x === b));
+      renderRows();
+    };
+  });
+  renderRows();
+}
+
+function renderRows() {
+  const q = hQuery.trim().toLowerCase();
+  const rows = HIST.filter(p => {
+    if (hFilter === 'with' && !p.chosen.length) return false;
+    if (hFilter === 'none' && p.chosen.length) return false;
+    if (!q) return true;
+    return [p.title, p.sku, p.vendor, p.k].some(v => String(v || '').toLowerCase().includes(q));
+  });
+
+  const box = document.getElementById('hrows');
+  if (!HIST.length) { box.innerHTML = '<div class="nores">No reviewed products yet. Products show up here after you confirm a review.</div>'; return; }
+  if (!rows.length) { box.innerHTML = '<div class="nores">No products match this search or filter.</div>'; return; }
+
+  box.innerHTML = rows.map(p => {
+    const n = p.chosen.length;
+    return `
+      <div class="hrow" tabindex="0" role="button" aria-expanded="false" onclick="toggleRow(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleRow(this)}">
+        <div>
+          <div class="ht">${esc(p.title || p.k)}</div>
+          <div class="hm"><span>SKU <b>${esc(p.sku || 'n/a')}</b></span><span>${esc(p.vendor || 'No vendor')}</span></div>
+        </div>
+        <div><span class="pill ${n ? 'ok' : 'zero'}"><i>${n}</i>${n === 1 ? 'image' : 'images'} chosen</span></div>
+        <div class="hd">${fmtDate(p.at)}</div>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+      </div>
+      <div class="hdetail">${detail(p)}</div>`;
+  }).join('');
+}
+
+function detail(p) {
+  if (p.chosen.length) {
+    return `<div class="dlabel">Uploaded to Shopify <span>(${p.chosen.length} ${p.chosen.length === 1 ? 'image' : 'images'}, in upload order)</span></div>
+      <div class="thumbs">${p.chosen.map((u, i) => `
+        <a class="thumb" href="${esc(u)}" target="_blank" rel="noopener">
+          ${i === 0 ? '<span class="tag">Main</span>' : ''}<span class="pos">${i + 1}</span>
+          <div class="iw"><img loading="lazy" src="${esc(u)}" alt=""></div>
+        </a>`).join('')}</div>`;
+  }
+  if (!p.others.length) return '<div class="dlabel">No images chosen <span>(no candidates on record)</span></div>';
+  return `<div class="dlabel">No images chosen <span>(candidates you rejected)</span></div>
+    <div class="thumbs">${p.others.map(u => `
+      <a class="thumb dim" href="${esc(u)}" target="_blank" rel="noopener">
+        <div class="iw"><img loading="lazy" src="${esc(u)}" alt=""></div>
+      </a>`).join('')}</div>`;
+}
+
+function toggleRow(el) {
+  const open = !el.classList.contains('open');
+  el.classList.toggle('open', open);
+  el.setAttribute('aria-expanded', open);
+  el.nextElementSibling.classList.toggle('open', open);
 }
 
 load();
