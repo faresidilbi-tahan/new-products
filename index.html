@@ -302,7 +302,7 @@ async function submitAll() {
   const approved = {}, skipped = [], statuses = [];
   DATA.forEach(p => {
     if (rejected.has(p.k)) {
-      p.cands.forEach(c => statuses.push({ rowId: c.rowId, status: 'rejected' }));
+      p.cands.forEach(c => statuses.push({ productId: p.k, url: c.url, status: 'rejected' }));
       return;
     }
     const s = sel[p.k];
@@ -310,7 +310,8 @@ async function submitAll() {
     const mainL = s.main || [...s.approved][0];
     approved[p.k] = [mainL, ...[...s.approved].filter(l => l !== mainL)].map(l => p.cands.find(c => c.l === l).url);
     p.cands.forEach(c => statuses.push({
-      rowId: c.rowId,
+      productId: p.k,
+      url: c.url,
       status: c.l === mainL ? 'main' : (s.approved.has(c.l) ? 'approved' : 'unchosen')
     }));
   });
