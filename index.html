@@ -136,7 +136,7 @@
 
   /* All products: distribution */
   .dist { background:#fff; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
-  .drow { display:grid; grid-template-columns:120px minmax(0,1fr) 100px 64px; gap:18px; align-items:center; padding:13px 20px; border-top:1px solid #eee; }
+  .drow { display:grid; grid-template-columns:120px minmax(0,1fr) 100px 64px 18px; gap:18px; align-items:center; padding:13px 20px; border-top:1px solid #eee; }
   .drow.head { border-top:none; background:#f7f8fa; font-size:12.5px; font-weight:600; color:var(--dim); padding-top:11px; padding-bottom:11px; }
   .drow .lab { font-size:14.5px; font-weight:600; }
   .drow .lab.warn { color:var(--warn); }
@@ -147,6 +147,30 @@
   .drow .pct { text-align:right; font-size:13px; color:var(--dim); font-variant-numeric:tabular-nums; }
   .drow.head .cnt, .drow.head .pct { font-size:12.5px; font-weight:600; }
   .counted { font-size:12.5px; color:var(--dim); margin-top:12px; }
+  .drow.click { cursor:pointer; }
+  .drow.click:hover { background:#f7faff; }
+  .drow.open { background:var(--soft); }
+  .drow:focus-visible { outline:2px solid #1565C0; outline-offset:-2px; }
+  .dlist { display:none; background:#f8fafd; border-top:1px solid #e8edf4; }
+  .dlist.open { display:block; }
+  .dl-bar { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; padding:12px 20px; }
+  .dl-bar input { flex:1; min-width:180px; max-width:340px; border:1px solid var(--line); border-radius:7px; padding:8px 11px; font:400 13.5px 'Outfit',sans-serif; color:var(--text); background:#fff; }
+  .dl-bar input:focus { outline:none; border-color:#1565C0; }
+  .dl-count { font-size:13px; color:var(--dim); font-variant-numeric:tabular-nums; }
+  .btn-sm { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); background:#fff; color:#1565C0; font:600 12.5px 'Outfit',sans-serif; padding:7px 12px; border-radius:7px; cursor:pointer; white-space:nowrap; }
+  .btn-sm:hover { border-color:#1565C0; }
+  .btn-sm.solid { background:#1565C0; color:#fff; border-color:#1565C0; }
+  .btn-sm svg { width:13px; height:13px; }
+  .hbtns { display:flex; gap:8px; flex-wrap:wrap; }
+  .sr { display:grid; grid-template-columns:190px minmax(0,1fr) 150px 26px; gap:14px; align-items:center; padding:9px 20px; border-top:1px solid #edf1f6; font-size:13.5px; }
+  .sr .sku { font-weight:600; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .sr .sku.none { color:#aaa; font-weight:500; }
+  .sr .ti { color:#59626d; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .sr .ve { color:var(--dim); font-size:12.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .sr a { color:#aaa; display:flex; }
+  .sr a:hover { color:#1565C0; }
+  .sr a svg { width:15px; height:15px; }
+  .more { display:flex; justify-content:center; padding:12px 0 16px; border-top:1px solid #edf1f6; }
 
   @media (prefers-reduced-motion:reduce){ * { transition:none !important; } }
   @media (max-width:860px){
@@ -157,7 +181,9 @@
     .pr { grid-template-columns:minmax(0,1fr) 18px; padding-left:20px; }
     .pr .pr-title, .pr .pr-time { display:none; }
     .pr-img { padding-left:20px; }
-    .drow { grid-template-columns:90px minmax(0,1fr) 70px; }
+    .drow { grid-template-columns:90px minmax(0,1fr) 70px 18px; }
+    .sr { grid-template-columns:130px minmax(0,1fr) 26px; }
+    .sr .ve { display:none; }
     .drow .pct { display:none; }
   }
   @media (max-width:700px){ aside{width:66px} aside .logo, #list button .lbl, #prog, #tabs .lbl, #hside{display:none} #tabs{margin:12px 8px} #tabs button{justify-content:center} #bar{left:66px} main{padding:20px 16px 100px} }
@@ -413,7 +439,7 @@ function keyToggle(e, el) {
 // ================= Views =================
 const SIDE_TEXT = {
   history: 'Reviewed products grouped by day. Click a line to see its SKUs, then a SKU to see its images.',
-  products: 'Active products on abedtahan.com, counted by how many images each one has.'
+  products: 'Active products on abedtahan.com, counted by how many images each one has. Click a line to see its SKUs.'
 };
 
 function setView(v) {
@@ -582,7 +608,12 @@ function detail(p) {
 
 // ================= All products =================
 let PROD = null;
+let PROD_BY = {};
 const prodEl = document.getElementById('products');
+const PAGE = 200;
+const SHOP_ADMIN = 'https://admin.shopify.com/store/jad-b-2/products/';
+const DL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>';
+const EXT_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M10 14 20 4"/><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg>';
 
 async function loadProducts(force) {
   if (PROD && !force) { renderProducts(); return; }
@@ -591,11 +622,17 @@ async function loadProducts(force) {
     const res = await fetch(PRODUCTS_URL + (force ? '?refresh=1' : ''));
     if (!res.ok) throw new Error('HTTP ' + res.status);
     PROD = await res.json();
+    // rows: [id, skus, title, vendor, imageCount]
+    PROD_BY = {};
+    (PROD.products || []).forEach(r => { (PROD_BY[r[4]] = PROD_BY[r[4]] || []).push(r); });
+    Object.values(PROD_BY).forEach(a => a.sort((x, y) => String(x[1] || '~').localeCompare(String(y[1] || '~'))));
     renderProducts();
   } catch (e) {
     prodEl.innerHTML = `<div class="empty">Couldn't count products. Check PRODUCTS_URL and that the n8n workflow is active.<br><br>${esc(e)}</div>`;
   }
 }
+
+const imgLabel = n => n === 0 ? 'No images' : plural(n, 'image', 'images');
 
 function renderProducts() {
   const buckets = (PROD.buckets || []).slice().sort((a, b) => a.images - b.images);
@@ -604,6 +641,7 @@ function renderProducts() {
   const zero = (buckets.find(b => b.images === 0) || {}).products || 0;
   const max = Math.max(1, ...buckets.map(b => b.products));
   const avg = total ? (totalImgs / total).toFixed(1) : '0';
+  const hasList = Array.isArray(PROD.products);
 
   prodEl.innerHTML = `
     <div class="h-head">
@@ -611,7 +649,10 @@ function renderProducts() {
         <h1>All products</h1>
         <div class="h-sub">Active products on the website by number of images</div>
       </div>
-      <button class="refresh" onclick="loadProducts(true)">${REFRESH_ICON}Recount</button>
+      <div class="hbtns">
+        ${hasList ? `<button class="refresh" onclick="exportAll()">${DL_ICON}Export all</button>` : ''}
+        <button class="refresh" onclick="loadProducts(true)">${REFRESH_ICON}Recount</button>
+      </div>
     </div>
     <div class="summary s4">
       <div><div class="v">${num(total)}</div><div class="l">Products on website</div></div>
@@ -620,19 +661,109 @@ function renderProducts() {
       <div><div class="v warn">${num(zero)}</div><div class="l">Products with no images</div></div>
     </div>
     ${buckets.length ? `<div class="dist">
-      <div class="drow head"><div>Images</div><div>Share of products</div><div class="cnt">Products</div><div class="pct">%</div></div>
+      <div class="drow head"><div>Images</div><div>Share of products</div><div class="cnt">Products</div><div class="pct">%</div><div></div></div>
       ${buckets.map(b => {
         const warn = b.images === 0;
         const pct = total ? (b.products / total * 100) : 0;
-        return `<div class="drow">
-          <div class="lab ${warn ? 'warn' : ''}">${b.images === 0 ? 'No images' : plural(b.images, 'image', 'images')}</div>
+        return `<div class="drow ${hasList ? 'click' : ''}" ${hasList ? `tabindex="0" role="button" aria-expanded="false" onclick="openBucket(this,${b.images})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openBucket(this,${b.images})}"` : ''}>
+          <div class="lab ${warn ? 'warn' : ''}">${imgLabel(b.images)}</div>
           <div class="bar ${warn ? 'warn' : ''}"><span style="width:${(b.products / max * 100).toFixed(1)}%"></span></div>
           <div class="cnt">${num(b.products)}</div>
           <div class="pct">${pct < 0.1 && pct > 0 ? '<0.1' : pct.toFixed(1)}%</div>
-        </div>`;
+          ${hasList ? CHEV : '<div></div>'}
+        </div>
+        <div class="dlist" data-n="${b.images}"></div>`;
       }).join('')}
     </div>` : '<div class="nores">No active products found.</div>'}
-    <div class="counted">${PROD.updatedAt ? 'Counted ' + ago(PROD.updatedAt) + '. Counts refresh automatically every 6 hours, or click Recount.' : ''}</div>`;
+    <div class="counted">${PROD.updatedAt ? 'Counted ' + ago(PROD.updatedAt) + '. Counts refresh automatically every 6 hours, or click Recount.' : ''}
+      ${hasList ? '' : ' Click Recount to load the SKU lists.'}</div>`;
+}
+
+function openBucket(el, n) {
+  toggleOpen(el);
+  const box = el.nextElementSibling;
+  if (el.classList.contains('open') && !box.dataset.ready) {
+    box.dataset.ready = '1';
+    box.innerHTML = `
+      <div class="dl-bar">
+        <input type="search" placeholder="Filter by SKU, product or vendor" oninput="filterBucket(this, ${n})">
+        <div style="display:flex;gap:10px;align-items:center">
+          <span class="dl-count"></span>
+          <button class="btn-sm solid" onclick="exportBucket(${n}, this)">${DL_ICON}Export</button>
+        </div>
+      </div>
+      <div class="dl-rows"></div>`;
+    box._q = '';
+    box._limit = PAGE;
+    drawBucket(box, n);
+  }
+}
+
+function bucketRows(box, n) {
+  const q = (box._q || '').trim().toLowerCase();
+  const all = PROD_BY[n] || [];
+  return q ? all.filter(r => [r[1], r[2], r[3]].some(v => String(v || '').toLowerCase().includes(q))) : all;
+}
+
+function drawBucket(box, n) {
+  const rows = bucketRows(box, n);
+  const shown = rows.slice(0, box._limit);
+  box.querySelector('.dl-count').textContent = `${num(rows.length)} ${rows.length === 1 ? 'product' : 'products'}`;
+  box.querySelector('.dl-rows').innerHTML = (rows.length ? shown.map(r => `
+    <div class="sr">
+      <span class="sku ${r[1] ? '' : 'none'}">${esc(r[1] || 'No SKU')}</span>
+      <span class="ti">${esc(r[2])}</span>
+      <span class="ve">${esc(r[3])}</span>
+      <a href="${SHOP_ADMIN}${r[0]}" target="_blank" rel="noopener" title="Open in Shopify">${EXT_ICON}</a>
+    </div>`).join('') : '<div class="sr"><span class="ti">No products match this filter.</span></div>')
+    + (rows.length > shown.length
+      ? `<div class="more"><button class="btn-sm" onclick="moreBucket(this, ${n})">Show ${num(Math.min(PAGE, rows.length - shown.length))} more (${num(rows.length - shown.length)} left)</button></div>`
+      : '');
+}
+
+function filterBucket(input, n) {
+  const box = input.closest('.dlist');
+  box._q = input.value;
+  box._limit = PAGE;
+  drawBucket(box, n);
+}
+
+function moreBucket(btn, n) {
+  const box = btn.closest('.dlist');
+  box._limit += PAGE;
+  drawBucket(box, n);
+}
+
+function toCSV(rows) {
+  const q = v => {
+    const s = String(v ?? '');
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+  const head = ['SKU', 'Product', 'Vendor', 'Images', 'Shopify link'];
+  const lines = rows.map(r => [r[1], r[2], r[3], r[4], SHOP_ADMIN + r[0]].map(q).join(','));
+  return '\ufeff' + [head.join(','), ...lines].join('\r\n');
+}
+
+function download(name, text) {
+  const url = URL.createObjectURL(new Blob([text], { type: 'text/csv;charset=utf-8' }));
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+const stamp = () => new Date().toISOString().slice(0, 10);
+
+function exportBucket(n, btn) {
+  const box = btn.closest('.dlist');
+  const rows = bucketRows(box, n);
+  const slug = n === 0 ? 'no-images' : `${n}-image${n === 1 ? '' : 's'}`;
+  download(`products-${slug}-${stamp()}.csv`, toCSV(rows));
+}
+
+function exportAll() {
+  const rows = (PROD.products || []).slice().sort((a, b) => a[4] - b[4] || String(a[1]).localeCompare(String(b[1])));
+  download(`products-image-counts-${stamp()}.csv`, toCSV(rows));
 }
 
 load();
