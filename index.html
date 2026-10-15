@@ -93,9 +93,27 @@
   /* History: days */
   .days { display:flex; flex-direction:column; gap:16px; }
   .day { background:#fff; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
-  .day-h { display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; padding:15px 20px 13px; border-bottom:1px solid #eee; }
+  .day-h { display:flex; justify-content:space-between; align-items:center; gap:12px 24px; flex-wrap:wrap; padding:14px 20px 13px; border-bottom:1px solid #eee; }
   .day-d { font-size:16.5px; font-weight:700; }
-  .day-t { font-size:13px; color:var(--dim); font-variant-numeric:tabular-nums; }
+  .day-t { font-size:13px; color:var(--dim); font-variant-numeric:tabular-nums; margin-top:2px; }
+  .day-r { display:flex; align-items:center; gap:12px; font-size:13px; color:var(--dim); font-variant-numeric:tabular-nums; }
+  .day-r b { font-weight:700; }
+  .mbar { width:120px; height:8px; border-radius:99px; overflow:hidden; display:flex; background:#eef2f7; flex-shrink:0; }
+  .mbar span, .rbar span { display:block; height:100%; }
+  .mbar .a, .rbar .a { background:#1565C0; }
+  .mbar .d, .rbar .d { background:#d9534f; }
+  .ok-t { color:#1565C0; }
+  .no-t { color:#c0392b; }
+
+  /* Rates summary */
+  .rates { background:#fff; border:1px solid var(--line); border-radius:10px; padding:18px 20px 16px; margin:-4px 0 18px; }
+  .rates-top { display:flex; align-items:flex-end; gap:36px; flex-wrap:wrap; }
+  .rates-top .rv { font-size:30px; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; }
+  .rates-top .rl { font-size:13px; color:var(--dim); margin-top:5px; }
+  .rates-top .rn { margin-left:auto; font-size:12.5px; color:var(--dim); text-align:right; max-width:320px; line-height:1.45; }
+  .rbar { height:12px; border-radius:99px; overflow:hidden; display:flex; background:#eef2f7; margin:14px 0 10px; }
+  .rleg { display:flex; gap:22px; flex-wrap:wrap; font-size:13px; color:#555; }
+  .rleg i { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:7px; vertical-align:-1px; }
   .bk { display:grid; grid-template-columns:auto minmax(0,1fr) 18px; gap:14px; align-items:center; padding:12px 20px; cursor:pointer; border-top:1px solid #f0f0f0; }
   .day-h + .bk { border-top:none; }
   .bk:hover { background:#f7faff; }
@@ -486,6 +504,7 @@ function renderHistory() {
   const imgs = HIST.reduce((a, p) => a + p.chosen.length, 0);
   const nf = HIST.filter(p => p.notFound).length;
   const none = total - withImgs - nf;
+  const R = rates(HIST);
 
   hist.innerHTML = `
     <div class="h-head">
@@ -502,6 +521,18 @@ function renderHistory() {
       <div><div class="v">${num(none)}</div><div class="l">No image uploaded</div></div>
       <div><div class="v warn">${num(nf)}</div><div class="l">Not found online</div></div>
     </div>
+    ${R.base ? `<div class="rates">
+      <div class="rates-top">
+        <div><div class="rv ok-t">${R.ap}%</div><div class="rl">Approve rate</div></div>
+        <div><div class="rv no-t">${R.dp}%</div><div class="rl">Decline rate</div></div>
+        <div class="rn">Out of ${plural(R.base, 'reviewed product', 'reviewed products')}. Not-found products aren't counted.</div>
+      </div>
+      <div class="rbar"><span class="a" style="width:${R.ap}%"></span><span class="d" style="width:${R.dp}%"></span></div>
+      <div class="rleg">
+        <span><i style="background:#1565C0"></i>${plural(R.a, 'product', 'products')} approved (1 or more images chosen)</span>
+        <span><i style="background:#d9534f"></i>${plural(R.d, 'product', 'products')} declined (no image chosen)</span>
+      </div>
+    </div>` : ''}
     <div class="search">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="hsearch" type="search" placeholder="Search by SKU, product or vendor" value="${esc(hQuery)}">
@@ -510,6 +541,14 @@ function renderHistory() {
 
   document.getElementById('hsearch').addEventListener('input', e => { hQuery = e.target.value; renderDays(); });
   renderDays();
+}
+
+function rates(list) {
+  const a = list.filter(p => p.chosen.length).length;
+  const d = list.filter(p => !p.notFound && !p.chosen.length).length;
+  const base = a + d;
+  const ap = base ? Math.round(a / base * 100) : 0;
+  return { a, d, base, ap, dp: base ? 100 - ap : 0 };
 }
 
 function bucketOf(p) {
@@ -552,11 +591,19 @@ function renderDays() {
     const all = Object.values(buckets).flat();
     const dayImgs = all.reduce((a, p) => a + p.chosen.length, 0);
     const bKeys = Object.keys(buckets).sort((a, b) => bucketOrder(b) - bucketOrder(a));
+    const r = rates(all);
 
     return `<section class="day">
       <div class="day-h">
-        <div class="day-d">${dayLabel(dk)}</div>
-        <div class="day-t">${plural(all.length, 'product', 'products')} reviewed, ${plural(dayImgs, 'image', 'images')} uploaded</div>
+        <div>
+          <div class="day-d">${dayLabel(dk)}</div>
+          <div class="day-t">${plural(all.length, 'product', 'products')} reviewed, ${plural(dayImgs, 'image', 'images')} uploaded</div>
+        </div>
+        ${r.base ? `<div class="day-r">
+          <div class="mbar"><span class="a" style="width:${r.ap}%"></span><span class="d" style="width:${r.dp}%"></span></div>
+          <span><b class="ok-t">${r.ap}%</b> approved</span>
+          <span><b class="no-t">${r.dp}%</b> declined</span>
+        </div>` : '<div class="day-r">Only not-found products</div>'}
       </div>
       ${bKeys.map(b => {
         const prods = buckets[b].slice().sort((x, y) => new Date(y.at || 0) - new Date(x.at || 0));
