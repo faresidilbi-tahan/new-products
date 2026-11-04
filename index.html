@@ -1209,7 +1209,7 @@ function drenderDays() {
 function ddetail(p) {
   if (p.status === 'not_found') {
     return `<div class="nfnote">${NF_ICON}
-      <div><b>No description found online</b>Nothing usable came up for this product. Write it manually or ask the supplier for specs.</div>
+      <div><b>No description found online</b>${p.reason ? esc(p.reason) + '. ' : ''}Write it manually or ask the supplier for specs.</div>
     </div>`;
   }
   if (p.status === 'approved') {
