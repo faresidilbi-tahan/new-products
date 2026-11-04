@@ -249,6 +249,141 @@
   .ddesc.dim { color:#8a8f96; }
 
   @media (max-width:1000px){ .dcols { grid-template-columns:1fr; } }
+
+  /* Storefront description styling (same as theme asset at-desc.css) */
+/* Abed Tahan — long product description styling (.at-desc) */
+  .at-desc {
+    --at-blue: #1565C0;
+    --at-yellow: #FFD400;
+    --at-ink: #1d2733;
+    --at-muted: #56616d;
+    --at-line: #e4e9f0;
+    --at-soft: #f3f7fc;
+    color: var(--at-ink);
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 920px;
+  }
+  .at-desc > *:first-child { margin-top: 0; }
+  .at-desc p { margin: 0 0 14px; color: var(--at-muted); }
+  .at-desc .at-lead { font-size: 17px; line-height: 1.65; color: var(--at-ink); }
+  
+  .at-desc h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 36px 0 14px;
+    font-size: 20px;
+    line-height: 1.3;
+    font-weight: 700;
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--at-ink);
+  }
+  .at-desc h2::before {
+    content: "";
+    flex: 0 0 4px;
+    height: 20px;
+    border-radius: 2px;
+    background: var(--at-yellow);
+  }
+  
+  /* Key features: two-column cards with a check mark */
+  .at-desc .at-features {
+    list-style: none;
+    margin: 0 0 8px;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .at-desc .at-features li {
+    position: relative;
+    margin: 0;
+    padding: 14px 16px 14px 46px;
+    background: var(--at-soft);
+    border-radius: 10px;
+    list-style: none;
+  }
+  .at-desc .at-features li::before {
+    content: "";
+    position: absolute;
+    left: 16px;
+    top: 17px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--at-blue) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 5 5L20 7'/%3E%3C/svg%3E") center / 11px no-repeat;
+  }
+  .at-desc .at-features strong { display: block; margin-bottom: 2px; font-size: 15px; color: var(--at-ink); }
+  .at-desc .at-features span { display: block; font-size: 14px; line-height: 1.55; color: var(--at-muted); }
+  
+  /* Specifications: clean two-column table */
+  .at-desc .at-specs {
+    width: 100%;
+    margin: 0 0 8px;
+    border: 1px solid var(--at-line);
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 14.5px;
+  }
+  .at-desc .at-specs th,
+  .at-desc .at-specs td {
+    padding: 11px 16px;
+    text-align: left;
+    vertical-align: top;
+    border: 0;
+    border-bottom: 1px solid var(--at-line);
+  }
+  .at-desc .at-specs th { width: 38%; font-weight: 600; color: var(--at-ink); background: var(--at-soft); }
+  .at-desc .at-specs td { color: var(--at-muted); background: #fff; }
+  .at-desc .at-specs tr:last-child th,
+  .at-desc .at-specs tr:last-child td { border-bottom: 0; }
+  
+  /* FAQ: collapsible */
+  .at-desc .at-faq { border-top: 1px solid var(--at-line); }
+  .at-desc .at-faq details { border-bottom: 1px solid var(--at-line); }
+  .at-desc .at-faq summary {
+    position: relative;
+    padding: 16px 40px 16px 0;
+    list-style: none;
+    cursor: pointer;
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--at-ink);
+  }
+  .at-desc .at-faq summary::-webkit-details-marker { display: none; }
+  .at-desc .at-faq summary::after {
+    content: "";
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    width: 14px;
+    height: 14px;
+    margin-top: -7px;
+    background:
+      linear-gradient(var(--at-blue), var(--at-blue)) center / 14px 2px no-repeat,
+      linear-gradient(var(--at-blue), var(--at-blue)) center / 2px 14px no-repeat;
+    transition: transform .2s ease;
+  }
+  .at-desc .at-faq details[open] summary::after { transform: rotate(45deg); }
+  .at-desc .at-faq summary:hover { color: var(--at-blue); }
+  .at-desc .at-faq summary:focus-visible { outline: 2px solid var(--at-blue); outline-offset: 2px; border-radius: 4px; }
+  .at-desc .at-faq details p { margin: -4px 0 16px; padding-right: 40px; }
+  
+  @media (max-width: 749px) {
+    .at-desc { font-size: 14.5px; }
+    .at-desc .at-lead { font-size: 16px; }
+    .at-desc h2 { margin-top: 28px; font-size: 18px; }
+    .at-desc .at-features { grid-template-columns: 1fr; }
+    .at-desc .at-specs th { width: 45%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .at-desc .at-faq summary::after { transition: none; }
+  }
+  
   @media (prefers-reduced-motion:reduce){ * { transition:none !important; } }
   @media (max-width:860px){
     .summary, .summary.s4 { grid-template-columns:repeat(2,1fr); }
