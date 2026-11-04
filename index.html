@@ -25,18 +25,31 @@
   .bk:focus-visible, .pr:focus-visible, .refresh:focus-visible { outline:2px solid #1565C0; outline-offset:-2px; }
 
   #list { flex:1; overflow-y:auto; padding:6px 10px 14px; }
+  #dlist { flex:1; overflow-y:auto; padding:6px 10px 14px; }
   #list button { display:flex; align-items:center; gap:9px; width:100%; text-align:left; background:none; border:none; border-radius:6px; padding:9px 11px; font-size:13px; color:#ccc; cursor:pointer; margin-bottom:2px; }
+  #dlist button { display:flex; align-items:center; gap:9px; width:100%; text-align:left; background:none; border:none; border-radius:6px; padding:9px 11px; font-size:13px; color:#ccc; cursor:pointer; margin-bottom:2px; }
   #list button:hover { background:#fff; color:#1565C0; }
+  #dlist button:hover { background:#fff; color:#1565C0; }
   #list button.active { background:#fff; color:#1565C0; font-weight:700; }
+  #dlist button.active { background:#fff; color:#1565C0; font-weight:700; }
   #list button .num { width:22px; height:22px; border-radius:6px; background:rgba(255,255,255,.15); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  #dlist button .num { width:22px; height:22px; border-radius:6px; background:rgba(255,255,255,.15); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   #list button.active .num { background:#1565C0; color:#fff; }
+  #dlist button.active .num { background:#1565C0; color:#fff; }
   #list button.done .num { background:#fff; color:#1565C0; }
+  #dlist button.done .num { background:#fff; color:#1565C0; }
   #list button.done .num::before { content:"Y"; }
+  #dlist button.done .num::before { content:"Y"; }
   #list button.rej .num { background:#555; color:#fff; }
+  #dlist button.rej .num { background:#555; color:#fff; }
   #list button.rej .num::before { content:"N"; }
+  #dlist button.rej .num::before { content:"N"; }
   #prog { padding:13px 18px; border-top:1px solid #333; font-size:12px; color:#bbb; }
+  #dprog { padding:13px 18px; border-top:1px solid #333; font-size:12px; color:#bbb; }
   #prog .track { height:6px; background:#333; border-radius:6px; overflow:hidden; margin-top:6px; }
+  #dprog .track { height:6px; background:#333; border-radius:6px; overflow:hidden; margin-top:6px; }
   #prog .fill { height:100%; width:0%; background:#fff; border-radius:6px; transition:width .25s; }
+  #dprog .fill { height:100%; width:0%; background:#fff; border-radius:6px; transition:width .25s; }
   #hside { flex:1; padding:8px 18px; font-size:13px; color:#dbe7f7; line-height:1.5; display:none; }
 
   main { flex:1; padding:24px 28px 100px; min-width:0; }
@@ -64,8 +77,11 @@
   .pane.rejected .cand { opacity:.35; pointer-events:none; }
   .pane.rejected .nav2 .none { background:#1565C0; color:#fff; }
   #bar { position:fixed; bottom:0; left:262px; right:0; background:#fff; border-top:1px solid var(--line); padding:12px 20px; display:flex; gap:12px; align-items:center; z-index:10; }
+  #dbar { position:fixed; bottom:0; left:262px; right:0; background:#fff; border-top:1px solid var(--line); padding:12px 20px; display:flex; gap:12px; align-items:center; z-index:10; }
   #bar > button { background:#1565C0; color:#fff; border:none; border-radius:6px; padding:12px 20px; font-size:14px; font-weight:700; cursor:pointer; }
+  #dbar > button { background:#1565C0; color:#fff; border:none; border-radius:6px; padding:12px 20px; font-size:14px; font-weight:700; cursor:pointer; }
   #bar .n { font-size:12.5px; color:var(--dim); }
+  #dbar .n { font-size:12.5px; color:var(--dim); }
   .empty { padding:40px; color:var(--dim); font-size:14px; }
 
   /* Shared page chrome (History + All products) */
@@ -190,6 +206,49 @@
   .sr a svg { width:15px; height:15px; }
   .more { display:flex; justify-content:center; padding:12px 0 16px; border-top:1px solid #edf1f6; }
 
+  /* Mode switch: Images / Descriptions */
+  #modes { display:flex; gap:4px; margin:0 12px 8px; padding:4px; background:rgba(0,0,0,.16); border-radius:9px; }
+  #modes button { flex:1; border:none; background:none; color:#dbe7f7; font:700 12.5px 'Outfit',sans-serif; padding:8px 6px; border-radius:6px; cursor:pointer; }
+  #modes button:hover { color:#fff; }
+  #modes button.on { background:#FFD400; color:#0d3c78; }
+  #modes button:focus-visible { outline:2px solid #fff; outline-offset:2px; }
+
+  /* Description review */
+  .dpane { display:none; }
+  .dpane.active { display:block; }
+  .dsrc { font-size:12.5px; color:var(--dim); margin-top:6px; }
+  .dsrc a { color:#1565C0; }
+  .dcols { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.25fr); gap:16px; margin-top:14px; }
+  .dcol { background:#fff; border:1px solid var(--line); border-radius:8px; display:flex; flex-direction:column; min-width:0; }
+  .dcol.new { border:2px solid var(--line); }
+  .dpane.approved .dcol.new { border-color:#1565C0; }
+  .dpane.declined .dcol.new { opacity:.5; }
+  .dcol-h { display:flex; align-items:center; gap:10px; padding:10px 14px; border-bottom:1px solid #eee; font-size:13px; font-weight:600; color:var(--text); }
+  .dcol-h span { font-weight:400; color:var(--dim); font-size:12px; }
+  .htmlbtn { margin-left:auto; border:1px solid var(--line); background:#fff; color:#1565C0; font:600 12px 'Outfit',sans-serif; padding:4px 10px; border-radius:6px; cursor:pointer; }
+  .dbody, .ddesc { padding:14px 16px; font-size:14px; line-height:1.6; color:var(--text); overflow:auto; }
+  .dbody { max-height:560px; }
+  .dbody.cur { color:#59626d; }
+  .dbody.edit { outline:none; min-height:260px; }
+  .dbody.edit:focus { box-shadow:inset 0 0 0 2px rgba(21,101,192,.15); }
+  .dbody h2, .dbody h3, .dbody h4, .ddesc h2, .ddesc h3, .ddesc h4 { font-size:15px; margin:14px 0 6px; }
+  .dbody p, .ddesc p { margin:0 0 10px; }
+  .dbody ul, .dbody ol, .ddesc ul, .ddesc ol { margin:0 0 10px; padding-left:20px; }
+  .dbody li, .ddesc li { margin:3px 0; }
+  .dbody table, .ddesc table { border-collapse:collapse; margin-bottom:10px; }
+  .dbody td, .dbody th, .ddesc td, .ddesc th { border:1px solid #eee; padding:4px 8px; text-align:left; }
+  .dbody .none { color:#aaa; font-style:italic; }
+  .dhtml { width:100%; min-height:420px; border:none; padding:14px 16px; font:12.5px/1.5 ui-monospace,Menlo,monospace; color:var(--text); resize:vertical; outline:none; border-radius:0 0 8px 8px; }
+  .nav2 .dno { margin-left:auto; color:#c0392b; }
+  .nav2 .dyes { color:#1565C0; border-color:#1565C0; }
+  .dpane.approved .nav2 .dyes { background:#1565C0; color:#fff; }
+  .dpane.declined .nav2 .dno { background:#c0392b; color:#fff; border-color:#c0392b; }
+  .chip.no { background:#fdecea; color:#c0392b; }
+  .bk.open .chip.no { background:#c0392b; color:#fff; }
+  .ddesc { background:#fff; border:1px solid var(--line); border-radius:8px; max-height:440px; max-width:820px; }
+  .ddesc.dim { color:#8a8f96; }
+
+  @media (max-width:1000px){ .dcols { grid-template-columns:1fr; } }
   @media (prefers-reduced-motion:reduce){ * { transition:none !important; } }
   @media (max-width:860px){
     .summary, .summary.s4 { grid-template-columns:repeat(2,1fr); }
@@ -204,38 +263,58 @@
     .sr .ve { display:none; }
     .drow .pct { display:none; }
   }
-  @media (max-width:700px){ aside{width:66px} aside .logo, #list button .lbl, #prog, #tabs .lbl, #hside{display:none} #tabs{margin:12px 8px} #tabs button{justify-content:center} #bar{left:66px} main{padding:20px 16px 100px} }
+  @media (max-width:700px){ aside{width:66px} aside .logo, #list button .lbl, #dlist button .lbl, #prog, #dprog, #tabs .lbl, #hside{display:none} #modes{flex-direction:column; margin:12px 8px 0} #modes button{font-size:10.5px; padding:6px 2px} #tabs{margin:12px 8px} #tabs button{justify-content:center} #bar, #dbar{left:66px} main{padding:20px 16px 100px} }
 </style>
 </head>
 <body>
 <aside>
   <div class="logo"><img style="width:100%; margin: auto;" src="https://abedtahan.com/cdn/shop/files/AT_Logo_400x200_Transparent.png?v=1732612010&amp;width=250"><span id="batchlabel" style="display:block;margin-top:8px">Loading...</span></div>
+  <div id="modes">
+    <button id="mode-img" class="on" onclick="setMode('img')">Images</button>
+    <button id="mode-desc" onclick="setMode('desc')">Descriptions</button>
+  </div>
   <nav id="tabs">
-    <button id="tab-review" class="on" onclick="setView('review')" title="Review">
+    <button id="tab-review" data-mode="img" class="on" onclick="setView('review')" title="Review">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       <span class="lbl">Review</span>
     </button>
-    <button id="tab-history" onclick="setView('history')" title="History">
+    <button id="tab-history" data-mode="img" onclick="setView('history')" title="History">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>
       <span class="lbl">History</span>
     </button>
-    <button id="tab-products" onclick="setView('products')" title="All products">
+    <button id="tab-products" data-mode="img" onclick="setView('products')" title="All products">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>
       <span class="lbl">All products</span>
     </button>
+    <button id="tab-dreview" data-mode="desc" style="display:none" onclick="setView('dreview')" title="Review">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h10"/></svg>
+      <span class="lbl">Review</span>
+    </button>
+    <button id="tab-dhistory" data-mode="desc" style="display:none" onclick="setView('dhistory')" title="History">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>
+      <span class="lbl">History</span>
+    </button>
   </nav>
   <div id="list"></div>
+  <div id="dlist" style="display:none"></div>
   <div id="hside"></div>
   <div id="prog"><span id="ptxt">0 / 0 reviewed</span><div class="track"><div class="fill" id="pfill"></div></div></div>
+  <div id="dprog" style="display:none"><span id="dptxt">0 / 0 reviewed</span><div class="track"><div class="fill" id="dpfill"></div></div></div>
 </aside>
 <main>
   <div id="review"><div class="empty">Loading pending items…</div></div>
   <div id="history" class="page" style="display:none"></div>
   <div id="products" class="page" style="display:none"></div>
+  <div id="dreview" style="display:none"><div class="empty">Loading descriptions…</div></div>
+  <div id="dhistory" class="page" style="display:none"></div>
 </main>
 <div id="bar" style="display:none">
   <button onclick="submitAll()">Confirm & Upload to Shopify</button>
   <span class="n" id="exnote">Click images to approve · "Main" = cover photo · "None good" if all bad</span>
+</div>
+<div id="dbar" style="display:none">
+  <button onclick="dsubmit()">Confirm & Update Shopify</button>
+  <span class="n" id="dnote">Edit the text if needed, then Approve or Decline each product</span>
 </div>
 <script>
 // ---- Point these at your n8n instance ----
@@ -243,6 +322,9 @@ const PENDING_URL  = "https://n8n.srv838782.hstgr.cloud/webhook/image-review-pen
 const SUBMIT_URL   = "https://n8n.srv838782.hstgr.cloud/webhook/image-review-submit";
 const HISTORY_URL  = "https://n8n.srv838782.hstgr.cloud/webhook/image-review-history";
 const PRODUCTS_URL = "https://n8n.srv838782.hstgr.cloud/webhook/image-review-products";
+const DPENDING_URL = "https://n8n.srv838782.hstgr.cloud/webhook/desc-review-pending";
+const DSUBMIT_URL  = "https://n8n.srv838782.hstgr.cloud/webhook/desc-review-submit";
+const DHISTORY_URL = "https://n8n.srv838782.hstgr.cloud/webhook/desc-review-history";
 // -------------------------------------------
 
 let DATA = [];
@@ -267,7 +349,7 @@ async function load() {
 }
 
 function render() {
-  document.getElementById('batchlabel').textContent = DATA.length + ' pending';
+  updateBatchLabel();
   list.innerHTML = '';
   if (!DATA.length) {
     main.innerHTML = '<div class="empty">Nothing pending right now — all caught up.</div>';
@@ -455,26 +537,47 @@ function keyToggle(e, el) {
 }
 
 // ================= Views =================
+const VIEWS = ['review', 'history', 'products', 'dreview', 'dhistory'];
 const SIDE_TEXT = {
   history: 'Reviewed products grouped by day. Click a line to see its SKUs, then a SKU to see its images.',
-  products: 'Active products on abedtahan.com, counted by how many images each one has. Click a line to see its SKUs.'
+  products: 'Active products on abedtahan.com, counted by how many images each one has. Click a line to see its SKUs.',
+  dhistory: 'Reviewed descriptions grouped by day. Click a line to see its SKUs, then a SKU to see the description.'
 };
+let mode = 'img';
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('mode-img').classList.toggle('on', m === 'img');
+  document.getElementById('mode-desc').classList.toggle('on', m === 'desc');
+  document.querySelectorAll('#tabs [data-mode]').forEach(b => { b.style.display = b.dataset.mode === m ? '' : 'none'; });
+  setView(m === 'img' ? 'review' : 'dreview');
+}
+
+function updateBatchLabel() {
+  document.getElementById('batchlabel').textContent = (mode === 'desc' ? DDATA.length : DATA.length) + ' pending';
+}
 
 function setView(v) {
   view = v;
-  ['review', 'history', 'products'].forEach(x => {
+  VIEWS.forEach(x => {
     document.getElementById('tab-' + x).classList.toggle('on', x === v);
     document.getElementById(x).style.display = x === v ? '' : 'none';
   });
   list.style.display = v === 'review' ? '' : 'none';
   document.getElementById('prog').style.display = v === 'review' ? '' : 'none';
+  document.getElementById('dlist').style.display = v === 'dreview' ? '' : 'none';
+  document.getElementById('dprog').style.display = v === 'dreview' ? '' : 'none';
   const side = document.getElementById('hside');
-  side.style.display = v === 'review' ? 'none' : 'block';
+  side.style.display = SIDE_TEXT[v] ? 'block' : 'none';
   side.textContent = SIDE_TEXT[v] || '';
   document.getElementById('bar').style.display = (v === 'review' && DATA.length) ? 'flex' : 'none';
+  document.getElementById('dbar').style.display = (v === 'dreview' && DDATA.length) ? 'flex' : 'none';
+  updateBatchLabel();
   window.scrollTo(0, 0);
   if (v === 'history') loadHistory();
   if (v === 'products') loadProducts(false);
+  if (v === 'dreview' && !DLOADED) dload();
+  if (v === 'dhistory') dloadHistory();
 }
 
 // ================= History =================
@@ -811,6 +914,308 @@ function exportBucket(n, btn) {
 function exportAll() {
   const rows = (PROD.products || []).slice().sort((a, b) => a[4] - b[4] || String(a[1]).localeCompare(String(b[1])));
   download(`products-image-counts-${stamp()}.csv`, toCSV(rows));
+}
+
+// ================= Descriptions: review =================
+let DDATA = [];
+let DLOADED = false;
+const dsel = {};
+const dmain = document.getElementById('dreview');
+const dlistEl = document.getElementById('dlist');
+
+function sanitize(html) {
+  const doc = new DOMParser().parseFromString('<div>' + (html || '') + '</div>', 'text/html');
+  doc.querySelectorAll('script,style,iframe,object,embed,link,meta,form').forEach(n => n.remove());
+  doc.querySelectorAll('*').forEach(el => {
+    [...el.attributes].forEach(a => {
+      if (/^on/i.test(a.name) || (/^(href|src)$/i.test(a.name) && /^\s*javascript:/i.test(a.value))) el.removeAttribute(a.name);
+    });
+  });
+  return doc.body.firstChild.innerHTML.trim();
+}
+const host = u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return u; } };
+
+async function dload() {
+  dmain.innerHTML = '<div class="empty">Loading descriptions…</div>';
+  try {
+    const res = await fetch(DPENDING_URL);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    DDATA = (json.products || []).map((p, i) => ({ ...p, sources: p.sources || [], n: i + 1 }));
+    Object.keys(dsel).forEach(k => delete dsel[k]);
+    DLOADED = true;
+    drender();
+  } catch (e) {
+    dmain.innerHTML = `<div class="empty">Couldn't load descriptions. Check DPENDING_URL and that the n8n workflow is active.<br><br>${esc(e)}</div>`;
+  }
+}
+
+function drender() {
+  updateBatchLabel();
+  dlistEl.innerHTML = '';
+  const dbar = document.getElementById('dbar');
+  if (!DDATA.length) {
+    dmain.innerHTML = '<div class="empty">No descriptions waiting for review — all caught up.</div>';
+    dbar.style.display = 'none';
+    drefresh();
+    return;
+  }
+  dbar.style.display = view === 'dreview' ? 'flex' : 'none';
+  dmain.innerHTML = '';
+
+  DDATA.forEach((p, i) => {
+    const b = document.createElement('button');
+    b.innerHTML = `<span class="num"><i>${p.n}</i></span><span class="lbl">${esc(p.title || p.k)}</span>`;
+    b.dataset.pane = p.k;
+    b.onclick = () => dactivate(p.k);
+    dlistEl.appendChild(b);
+
+    const d = document.createElement('div');
+    d.className = 'dpane';
+    d.id = 'dp-' + p.k;
+    d.innerHTML = `
+      <div class="t">${esc(p.title || '')}</div>
+      <div class="meta2">SKU: ${esc(p.sku || 'n/a')} · Vendor: ${esc(p.vendor || 'n/a')}</div>
+      ${p.sources.length ? `<div class="dsrc">Rewritten from ${p.sources.map(u => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(host(u))}</a>`).join(', ')}</div>` : ''}
+      <div class="dcols">
+        <div class="dcol">
+          <div class="dcol-h">Current on Shopify</div>
+          <div class="dbody cur">${p.current ? sanitize(p.current) : '<p class="none">No description yet</p>'}</div>
+        </div>
+        <div class="dcol new">
+          <div class="dcol-h">New description <span>Click the text to edit</span><button class="htmlbtn" onclick="dToggleHtml('${p.k}', this)">Edit HTML</button></div>
+          <div class="dbody edit" contenteditable="true" id="de-${p.k}">${sanitize(p.proposed)}</div>
+          <textarea class="dhtml" id="dh-${p.k}" spellcheck="false" style="display:none"></textarea>
+        </div>
+      </div>
+      <div class="nav2">
+        ${i > 0 ? `<button class="back" onclick="dactivate('${DDATA[i - 1].k}')">Back</button>` : ''}
+        ${i < DDATA.length - 1 ? `<button class="next" onclick="dactivate('${DDATA[i + 1].k}')">Next</button>` : `<button class="fin" onclick="dsubmit()">Finish</button>`}
+        <button class="dno" onclick="dmark('${p.k}', 'rejected')">Decline</button>
+        <button class="dyes" onclick="dmark('${p.k}', 'approved')">Approve</button>
+      </div>`;
+    dmain.appendChild(d);
+  });
+
+  dactivate(DDATA[0].k);
+  drefresh();
+}
+
+function dactivate(id) {
+  dlistEl.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.pane === id));
+  dmain.querySelectorAll('.dpane').forEach(p => p.classList.toggle('active', p.id === 'dp-' + id));
+  window.scrollTo(0, 0);
+}
+
+function dmark(k, decision) {
+  dsel[k] = dsel[k] === decision ? undefined : decision;
+  const pane = document.getElementById('dp-' + k);
+  pane.classList.toggle('approved', dsel[k] === 'approved');
+  pane.classList.toggle('declined', dsel[k] === 'rejected');
+  drefresh();
+  // Move on to the next product after a decision
+  const i = DDATA.findIndex(p => p.k === k);
+  if (dsel[k] && i < DDATA.length - 1) setTimeout(() => dactivate(DDATA[i + 1].k), 250);
+}
+
+function drefresh() {
+  let done = 0;
+  DDATA.forEach(p => {
+    const btn = dlistEl.querySelector(`button[data-pane="${p.k}"]`);
+    if (!btn) return;
+    btn.classList.toggle('done', dsel[p.k] === 'approved');
+    btn.classList.toggle('rej', dsel[p.k] === 'rejected');
+    if (dsel[p.k]) done++;
+  });
+  document.getElementById('dptxt').textContent = done + ' / ' + DDATA.length + ' reviewed';
+  document.getElementById('dpfill').style.width = (DDATA.length ? done / DDATA.length * 100 : 0) + '%';
+}
+
+function dToggleHtml(k, btn) {
+  const ed = document.getElementById('de-' + k), ta = document.getElementById('dh-' + k);
+  if (ta.style.display === 'none') {
+    ta.value = ed.innerHTML.trim();
+    ta.style.display = ''; ed.style.display = 'none';
+    btn.textContent = 'Preview';
+  } else {
+    ed.innerHTML = sanitize(ta.value);
+    ed.style.display = ''; ta.style.display = 'none';
+    btn.textContent = 'Edit HTML';
+  }
+}
+
+function dGetHtml(k) {
+  const ed = document.getElementById('de-' + k), ta = document.getElementById('dh-' + k);
+  return sanitize(ta.style.display === 'none' ? ed.innerHTML : ta.value);
+}
+
+async function dsubmit() {
+  const items = DDATA.filter(p => dsel[p.k]).map(p => ({
+    productId: p.k,
+    decision: dsel[p.k],
+    html: dsel[p.k] === 'approved' ? dGetHtml(p.k) : ''
+  }));
+  const note = document.getElementById('dnote');
+  if (!items.length) { note.textContent = 'Nothing reviewed yet — Approve or Decline at least one product first.'; return; }
+  const empty = items.find(x => x.decision === 'approved' && !x.html.replace(/<[^>]+>/g, '').trim());
+  if (empty) { note.textContent = 'One approved description is empty. Add text or Decline it.'; return; }
+
+  note.textContent = 'Updating Shopify…';
+  try {
+    const res = await fetch(DSUBMIT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items }) });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    note.textContent = 'Shopify updated. Reloading…';
+    DHIST_LOADED = false;
+    setTimeout(dload, 1200);
+  } catch (e) {
+    note.textContent = 'Failed to submit: ' + e;
+  }
+}
+
+// ================= Descriptions: history =================
+let DHIST = [];
+let DHIST_LOADED = false;
+let dhQuery = '';
+const dhist = document.getElementById('dhistory');
+const DBUCKETS = {
+  approved: { chip: 'ok', text: c => `<b>${plural(c, 'product', 'products')}</b> got a new description` },
+  rejected: { chip: 'no', text: c => `<b>${plural(c, 'product', 'products')}</b> declined` },
+  not_found: { chip: 'nf', text: c => `<b>${plural(c, 'product', 'products')}</b> had no description found online` }
+};
+const DORDER = ['approved', 'rejected', 'not_found'];
+
+async function dloadHistory(force) {
+  if (DHIST_LOADED && !force) { drenderHistory(); return; }
+  dhist.innerHTML = '<div class="empty">Loading history…</div>';
+  try {
+    const res = await fetch(DHISTORY_URL);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    DHIST = json.history || [];
+    DHIST_LOADED = true;
+    drenderHistory();
+  } catch (e) {
+    dhist.innerHTML = `<div class="empty">Couldn't load history. Check DHISTORY_URL and that the n8n workflow is active.<br><br>${esc(e)}</div>`;
+  }
+}
+
+function drates(list) {
+  const a = list.filter(p => p.status === 'approved').length;
+  const d = list.filter(p => p.status === 'rejected').length;
+  const base = a + d;
+  const ap = base ? Math.round(a / base * 100) : 0;
+  return { a, d, base, ap, dp: base ? 100 - ap : 0 };
+}
+
+function drenderHistory() {
+  const total = DHIST.length;
+  const nf = DHIST.filter(p => p.status === 'not_found').length;
+  const R = drates(DHIST);
+
+  dhist.innerHTML = `
+    <div class="h-head">
+      <div>
+        <h1>Description history</h1>
+        <div class="h-sub">What was updated on Shopify, day by day</div>
+      </div>
+      <button class="refresh" onclick="dloadHistory(true)">${REFRESH_ICON}Refresh</button>
+    </div>
+    <div class="summary s4">
+      <div><div class="v">${num(total)}</div><div class="l">Products reviewed</div></div>
+      <div><div class="v blue">${num(R.a)}</div><div class="l">Descriptions approved</div></div>
+      <div><div class="v">${num(R.d)}</div><div class="l">Declined</div></div>
+      <div><div class="v warn">${num(nf)}</div><div class="l">Nothing found online</div></div>
+    </div>
+    ${R.base ? `<div class="rates">
+      <div class="rates-top">
+        <div><div class="rv ok-t">${R.ap}%</div><div class="rl">Approve rate</div></div>
+        <div><div class="rv no-t">${R.dp}%</div><div class="rl">Decline rate</div></div>
+        <div class="rn">Out of ${plural(R.base, 'reviewed product', 'reviewed products')}. Products with nothing found online aren't counted.</div>
+      </div>
+      <div class="rbar"><span class="a" style="width:${R.ap}%"></span><span class="d" style="width:${R.dp}%"></span></div>
+      <div class="rleg">
+        <span><i style="background:#1565C0"></i>${plural(R.a, 'product', 'products')} approved</span>
+        <span><i style="background:#d9534f"></i>${plural(R.d, 'product', 'products')} declined</span>
+      </div>
+    </div>` : ''}
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="dhsearch" type="search" placeholder="Search by SKU, product or vendor" value="${esc(dhQuery)}">
+    </div>
+    <div id="dhdays"></div>`;
+
+  document.getElementById('dhsearch').addEventListener('input', e => { dhQuery = e.target.value; drenderDays(); });
+  drenderDays();
+}
+
+function drenderDays() {
+  const box = document.getElementById('dhdays');
+  if (!DHIST.length) { box.innerHTML = '<div class="nores">No reviewed descriptions yet. They appear here after you confirm a review.</div>'; return; }
+
+  const q = dhQuery.trim().toLowerCase();
+  const rows = q
+    ? DHIST.filter(p => [p.sku, p.title, p.vendor, p.k].some(v => String(v || '').toLowerCase().includes(q)))
+    : DHIST;
+  if (!rows.length) { box.innerHTML = '<div class="nores">No products match this search.</div>'; return; }
+
+  const days = {};
+  rows.forEach(p => {
+    const dk = dayKey(p.at);
+    days[dk] = days[dk] || {};
+    (days[dk][p.status] = days[dk][p.status] || []).push(p);
+  });
+  const dayKeys = Object.keys(days).sort((a, b) => a === 'unknown' ? 1 : b === 'unknown' ? -1 : b.localeCompare(a));
+
+  box.innerHTML = '<div class="days">' + dayKeys.map(dk => {
+    const buckets = days[dk];
+    const all = Object.values(buckets).flat();
+    const r = drates(all);
+    return `<section class="day">
+      <div class="day-h">
+        <div>
+          <div class="day-d">${dayLabel(dk)}</div>
+          <div class="day-t">${plural(all.length, 'product', 'products')} reviewed, ${plural(r.a, 'description', 'descriptions')} updated</div>
+        </div>
+        ${r.base ? `<div class="day-r">
+          <div class="mbar"><span class="a" style="width:${r.ap}%"></span><span class="d" style="width:${r.dp}%"></span></div>
+          <span><b class="ok-t">${r.ap}%</b> approved</span>
+          <span><b class="no-t">${r.dp}%</b> declined</span>
+        </div>` : '<div class="day-r">Only products with nothing found</div>'}
+      </div>
+      ${DORDER.filter(s => buckets[s]).map(s => {
+        const prods = buckets[s].slice().sort((x, y) => new Date(y.at || 0) - new Date(x.at || 0));
+        return `
+        <div class="bk" tabindex="0" role="button" aria-expanded="${q ? 'true' : 'false'}" ${q ? 'data-open' : ''} onclick="toggleOpen(this)" onkeydown="keyToggle(event,this)">
+          <span class="chip ${DBUCKETS[s].chip}">${prods.length}</span>
+          <span class="bk-txt">${DBUCKETS[s].text(prods.length)}</span>
+          ${CHEV}
+        </div>
+        <div class="bk-list">${prods.map(p => `
+          <div class="pr" tabindex="0" role="button" aria-expanded="false" onclick="toggleOpen(this)" onkeydown="keyToggle(event,this)">
+            <span class="pr-sku">${esc(p.sku || 'No SKU')}</span>
+            <span class="pr-title">${esc(p.title || p.k)}</span>
+            <span class="pr-time">${fmtTime(p.at)}</span>
+            ${CHEV}
+          </div>
+          <div class="pr-img">${ddetail(p)}</div>`).join('')}
+        </div>`;
+      }).join('')}
+    </section>`;
+  }).join('') + '</div>';
+
+  if (q) box.querySelectorAll('.bk[data-open]').forEach(el => { el.classList.add('open'); el.nextElementSibling.classList.add('open'); });
+}
+
+function ddetail(p) {
+  if (p.status === 'not_found') {
+    return `<div class="nfnote">${NF_ICON}
+      <div><b>No description found online</b>Nothing usable came up for this product. Write it manually or ask the supplier for specs.</div>
+    </div>`;
+  }
+  if (p.status === 'approved') {
+    return `<div class="dlabel">Description now on Shopify</div><div class="ddesc">${sanitize(p.final || p.proposed) || '<p>Empty</p>'}</div>`;
+  }
+  return `<div class="dlabel">Declined <span>(the proposed description)</span></div><div class="ddesc dim">${sanitize(p.proposed) || '<p>Empty</p>'}</div>`;
 }
 
 load();
