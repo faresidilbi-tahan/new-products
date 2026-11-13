@@ -6,252 +6,332 @@
 <title>Abed Tahan — Image Review</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-  :root { --ink:#1565C0; --line:#dcdcdc; --dim:#777; --bg:#fafafa; --text:#1d2733; --soft:#eef4fc; --warn:#a35c00; --warnbg:#fff3e0; }
+  :root {
+    --bg:#F8F8FA; --card:#fff; --line:#E7E7EC; --line2:#F0F0F4;
+    --text:#14161C; --muted:#6B6F7B; --faint:#9A9EA9;
+    --purple:#6C47FF; --purple-d:#5A35F0; --lav:#F2EEFF; --lav-line:#D9CFFF; --lav-2:#CFC3FF;
+    --gray-bar:#C9C9D3;
+    --green:#16A34A; --green-bg:#E8F7EE; --red:#E5484D; --red-bg:#FDECEC; --amber:#B45309; --amber-bg:#FFF4E5;
+    --r:12px; --side:252px;
+  }
   * { box-sizing:border-box; margin:0; }
-  body { font-family:'Outfit',-apple-system,"Segoe UI",Roboto,Arial,sans-serif; background:var(--bg); color:var(--ink); display:flex; min-height:100vh; }
-  aside { width:262px; background:#1565C0; color:#fff; flex-shrink:0; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; }
-  aside .logo { padding:20px 18px 12px; font-size:13px; font-weight:700; }
-  .logo img { width:170px !important; }
+  body { font-family:'Lato',-apple-system,"Segoe UI",Roboto,Arial,sans-serif; background:var(--bg); color:var(--text); display:flex; min-height:100vh; font-size:14px; -webkit-font-smoothing:antialiased; }
+  button { font-family:inherit; }
+  a { color:inherit; }
+  svg { flex-shrink:0; }
 
-  /* Navigation */
-  #tabs { display:flex; flex-direction:column; gap:3px; margin:4px 12px 10px; padding:4px; background:rgba(255,255,255,.12); border-radius:9px; }
-  #tabs button { display:flex; align-items:center; gap:10px; border:none; background:none; color:#dbe7f7; font:600 13.5px 'Outfit',sans-serif; padding:9px 11px; border-radius:6px; cursor:pointer; text-align:left; }
-  #tabs button:hover { color:#fff; background:rgba(255,255,255,.08); }
-  #tabs button.on { background:#fff; color:#1565C0; }
-  #tabs svg { width:16px; height:16px; flex-shrink:0; }
-  #tabs button:focus-visible { outline:2px solid #fff; outline-offset:2px; }
-  .bk:focus-visible, .pr:focus-visible, .refresh:focus-visible { outline:2px solid #1565C0; outline-offset:-2px; }
+  /* ===== Sidebar ===== */
+  aside { width:var(--side); background:#fff; border-right:1px solid var(--line); flex-shrink:0; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; z-index:20; }
+  .brand { display:flex; align-items:center; gap:12px; padding:18px 18px 16px; border-bottom:1px solid var(--line); }
+  .av { width:40px; height:40px; border-radius:50%; background:var(--lav); color:var(--purple); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0; }
+  .av.sm { width:32px; height:32px; font-size:11.5px; }
+  .bt { display:flex; flex-direction:column; min-width:0; }
+  .bt b { font-size:14.5px; font-weight:700; }
+  .bt span { font-size:12px; color:var(--muted); margin-top:1px; }
+  .tiles { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:14px 14px; border-bottom:1px solid var(--line); }
+  .tile { display:flex; flex-direction:column; align-items:center; gap:6px; padding:10px 4px 9px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--muted); font-size:11.5px; font-weight:600; cursor:pointer; text-decoration:none; }
+  .tile svg { width:17px; height:17px; color:var(--text); }
+  .tile:hover { border-color:var(--lav-line); color:var(--text); }
+  .tile.on { background:var(--lav); border-color:var(--lav-line); color:var(--purple); }
+  .tile.on svg { color:var(--purple); }
+  .side-scroll { flex:1; overflow-y:auto; padding:12px 10px; }
+  #tabs { display:flex; flex-direction:column; gap:2px; }
+  #tabs > button { display:flex; align-items:center; gap:11px; width:100%; border:1px solid transparent; background:none; color:var(--text); font-size:13.5px; font-weight:500; padding:9px 10px; border-radius:9px; cursor:pointer; text-align:left; }
+  #tabs > button svg { width:17px; height:17px; color:#4B4F5B; }
+  #tabs > button:hover { background:#F6F6F9; }
+  #tabs > button.on { background:var(--lav); border-color:var(--lav-line); font-weight:600; }
+  #tabs > button.on svg { color:var(--purple); }
+  #tabs .lbl { flex:1; }
+  .badge { min-width:20px; height:20px; padding:0 6px; border-radius:999px; background:var(--purple); color:#fff; font-size:11px; font-weight:700; display:none; align-items:center; justify-content:center; }
+  .badge.show { display:inline-flex; }
+  #tabs button:focus-visible, .tile:focus-visible, .pill:focus-visible, .btn:focus-visible, .bk:focus-visible, .pr:focus-visible, .drow:focus-visible { outline:2px solid var(--purple); outline-offset:2px; }
 
-  #list { flex:1; overflow-y:auto; padding:6px 10px 14px; }
-  #dlist { flex:1; overflow-y:auto; padding:6px 10px 14px; }
-  #list button { display:flex; align-items:center; gap:9px; width:100%; text-align:left; background:none; border:none; border-radius:6px; padding:9px 11px; font-size:13px; color:#ccc; cursor:pointer; margin-bottom:2px; }
-  #dlist button { display:flex; align-items:center; gap:9px; width:100%; text-align:left; background:none; border:none; border-radius:6px; padding:9px 11px; font-size:13px; color:#ccc; cursor:pointer; margin-bottom:2px; }
-  #list button:hover { background:#fff; color:#1565C0; }
-  #dlist button:hover { background:#fff; color:#1565C0; }
-  #list button.active { background:#fff; color:#1565C0; font-weight:700; }
-  #dlist button.active { background:#fff; color:#1565C0; font-weight:700; }
-  #list button .num { width:22px; height:22px; border-radius:6px; background:rgba(255,255,255,.15); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-  #dlist button .num { width:22px; height:22px; border-radius:6px; background:rgba(255,255,255,.15); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-  #list button.active .num { background:#1565C0; color:#fff; }
-  #dlist button.active .num { background:#1565C0; color:#fff; }
-  #list button.done .num { background:#fff; color:#1565C0; }
-  #dlist button.done .num { background:#fff; color:#1565C0; }
-  #list button.done .num::before { content:"Y"; }
-  #dlist button.done .num::before { content:"Y"; }
-  #list button.rej .num { background:#555; color:#fff; }
-  #dlist button.rej .num { background:#555; color:#fff; }
-  #list button.rej .num::before { content:"N"; }
-  #dlist button.rej .num::before { content:"N"; }
-  #prog { padding:13px 18px; border-top:1px solid #333; font-size:12px; color:#bbb; }
-  #dprog { padding:13px 18px; border-top:1px solid #333; font-size:12px; color:#bbb; }
-  #prog .track { height:6px; background:#333; border-radius:6px; overflow:hidden; margin-top:6px; }
-  #dprog .track { height:6px; background:#333; border-radius:6px; overflow:hidden; margin-top:6px; }
-  #prog .fill { height:100%; width:0%; background:#fff; border-radius:6px; transition:width .25s; }
-  #dprog .fill { height:100%; width:0%; background:#fff; border-radius:6px; transition:width .25s; }
-  #hside { flex:1; padding:8px 18px; font-size:13px; color:#dbe7f7; line-height:1.5; display:none; }
+  #list, #dlist { display:flex; flex-direction:column; gap:1px; padding:4px 0 8px; }
+  #list button, #dlist button { display:flex; align-items:center; gap:9px; width:100%; text-align:left; background:none; border:none; border-radius:8px; padding:7px 10px 7px 12px; font-size:12.5px; color:var(--muted); cursor:pointer; }
+  #list button:hover, #dlist button:hover { color:var(--text); background:#F6F6F9; }
+  #list button.active, #dlist button.active { color:var(--purple); font-weight:600; background:#FAF8FF; }
+  #list .lbl, #dlist .lbl { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #list .num, #dlist .num { width:20px; height:20px; border-radius:6px; background:#F1F1F5; color:var(--muted); font-size:10.5px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  #list .num i, #dlist .num i { font-style:normal; }
+  #list button.active .num, #dlist button.active .num { background:var(--lav); color:var(--purple); }
+  #list button.done .num, #dlist button.done .num { background:var(--purple); color:#fff; }
+  #list button.done .num i, #dlist button.done .num i, #list button.rej .num i, #dlist button.rej .num i { display:none; }
+  #list button.done .num::before, #dlist button.done .num::before { content:"✓"; }
+  #list button.rej .num, #dlist button.rej .num { background:#6B6F7B; color:#fff; }
+  #list button.rej .num::before, #dlist button.rej .num::before { content:"✕"; }
 
-  main { flex:1; padding:24px 28px 100px; min-width:0; }
-  .pane { display:none; }
-  .pane.active { display:block; }
-  .t { font-size:17px; font-weight:700; line-height:1.35; }
-  .meta2 { font-size:12px; color:var(--dim); font-family:ui-monospace,Menlo,monospace; margin-top:5px; }
-  .imgs { display:grid; grid-template-columns:repeat(auto-fill,minmax(225px,1fr)); gap:15px; margin-top:12px; }
-  .cand { border:2px solid var(--line); border-radius:6px; overflow:hidden; cursor:pointer; position:relative; background:#fff; transition:transform .12s, border-color .12s; }
-  .cand:hover { transform:translateY(-2px); }
-  .cand .imgwrap { height:225px; display:flex; align-items:center; justify-content:center; background:#fff; }
-  .cand img { max-width:100%; max-height:100%; object-fit:contain; }
-  .cand .meta { font-size:11px; color:var(--dim); padding:6px 10px; border-top:1px solid var(--line); }
-  .cand.approved { border-color:#1565C0; }
-  .tick { position:absolute; top:10px; left:10px; width:26px; height:26px; border-radius:6px; background:#1565C0; color:#fff; display:none; align-items:center; justify-content:center; font-weight:800; font-size:13px; }
-  .cand.approved .tick { display:flex; }
-  .mainbtn { position:absolute; top:10px; right:10px; background:#fff; border:1px solid var(--line); font-size:12px; font-weight:600; padding:4px 11px; border-radius:6px; cursor:pointer; color:var(--dim); }
-  .cand.ismain .mainbtn { background:#1565C0; color:#fff; border-color:#1565C0; }
-  .nav2 { display:flex; gap:10px; margin-top:22px; align-items:center; flex-wrap:wrap; }
-  .nav2 button { border:1px solid var(--line); border-radius:6px; padding:11px 20px; font-size:14px; font-weight:600; cursor:pointer; background:#fff; color:#1565C0; }
-  .nav2 .back { color:var(--dim); }
-  .nav2 .next { background:#1565C0; color:#fff; border-color:#1565C0; }
-  .nav2 .fin { background:#1565C0; color:#fff; border-color:#1565C0; }
-  .nav2 .none { color:#1565C0; margin-left:auto; }
-  .pane.rejected .cand { opacity:.35; pointer-events:none; }
-  .pane.rejected .nav2 .none { background:#1565C0; color:#fff; }
-  #bar { position:fixed; bottom:0; left:262px; right:0; background:#fff; border-top:1px solid var(--line); padding:12px 20px; display:flex; gap:12px; align-items:center; z-index:10; }
-  #dbar { position:fixed; bottom:0; left:262px; right:0; background:#fff; border-top:1px solid var(--line); padding:12px 20px; display:flex; gap:12px; align-items:center; z-index:10; }
-  #bar > button { background:#1565C0; color:#fff; border:none; border-radius:6px; padding:12px 20px; font-size:14px; font-weight:700; cursor:pointer; }
-  #dbar > button { background:#1565C0; color:#fff; border:none; border-radius:6px; padding:12px 20px; font-size:14px; font-weight:700; cursor:pointer; }
-  #bar .n { font-size:12.5px; color:var(--dim); }
-  #dbar .n { font-size:12.5px; color:var(--dim); }
-  .empty { padding:40px; color:var(--dim); font-size:14px; }
+  #hside { display:none; padding:4px 18px 10px; font-size:12px; color:var(--faint); line-height:1.5; }
+  .side-foot { border-top:1px solid var(--line); padding:12px 10px 14px; display:flex; flex-direction:column; gap:2px; }
+  #prog, #dprog { padding:4px 10px 10px; font-size:12px; color:var(--muted); }
+  #prog .track, #dprog .track { height:6px; background:#EFEFF4; border-radius:6px; overflow:hidden; margin-top:7px; }
+  #prog .fill, #dprog .fill { height:100%; width:0%; background:var(--purple); border-radius:6px; transition:width .25s; }
+  .foot-link { display:flex; align-items:center; gap:11px; padding:8px 10px; border-radius:8px; font-size:13px; color:#3E424D; text-decoration:none; }
+  .foot-link svg { width:16px; height:16px; color:#5B5F6B; }
+  .foot-link:hover { background:#F6F6F9; }
 
-  /* Shared page chrome (History + All products) */
-  .page { max-width:1080px; color:var(--text); }
-  .h-head { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
-  .h-head h1 { font-size:24px; font-weight:700; letter-spacing:-.01em; color:var(--text); }
-  .h-sub { font-size:13.5px; color:var(--dim); margin-top:3px; }
-  .refresh { display:inline-flex; align-items:center; gap:7px; border:1px solid var(--line); background:#fff; color:#1565C0; font:600 13px 'Outfit',sans-serif; padding:9px 14px; border-radius:7px; cursor:pointer; }
-  .refresh:hover { border-color:#1565C0; }
-  .refresh svg { width:14px; height:14px; }
-  .summary { display:grid; grid-template-columns:repeat(5,1fr); background:#fff; border:1px solid var(--line); border-radius:10px; margin:22px 0 18px; }
-  .summary.s4 { grid-template-columns:repeat(4,1fr); }
-  .summary > div { padding:16px 20px; border-left:1px solid #eee; }
-  .summary > div:first-child { border-left:none; }
-  .summary .v { font-size:26px; font-weight:700; line-height:1.1; color:var(--text); font-variant-numeric:tabular-nums; }
-  .summary .v.blue { color:#1565C0; }
-  .summary .v.warn { color:var(--warn); }
-  .summary .l { font-size:12.5px; color:var(--dim); margin-top:4px; }
-  .search { position:relative; margin-bottom:16px; }
-  .search svg { position:absolute; left:12px; top:50%; transform:translateY(-50%); width:15px; height:15px; color:#999; pointer-events:none; }
-  .search input { width:100%; border:1px solid var(--line); border-radius:8px; padding:10px 12px 10px 36px; font:400 14px 'Outfit',sans-serif; color:var(--text); background:#fff; }
-  .search input:focus { outline:none; border-color:#1565C0; box-shadow:0 0 0 3px rgba(21,101,192,.12); }
-  .nores { padding:34px 20px; text-align:center; color:var(--dim); font-size:14px; background:#fff; border:1px solid var(--line); border-radius:10px; }
+  /* ===== Top bar ===== */
+  .shell { flex:1; min-width:0; display:flex; flex-direction:column; }
+  .top { position:sticky; top:0; z-index:15; height:56px; background:#fff; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:18px; padding:0 20px; }
+  .logo { display:flex; align-items:center; gap:9px; font-size:14.5px; }
+  .logo .lg { width:28px; height:28px; border-radius:8px; background:var(--purple); color:#fff; font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; }
+  .gsearch { flex:1; max-width:380px; position:relative; display:flex; align-items:center; }
+  .gsearch svg { position:absolute; left:12px; width:15px; height:15px; color:var(--faint); pointer-events:none; }
+  .gsearch input { width:100%; height:36px; border:1px solid var(--line); border-radius:9px; background:#FAFAFB; padding:0 12px 0 36px; font:400 13.5px 'Lato',sans-serif; color:var(--text); }
+  .gsearch input:focus { outline:none; border-color:var(--lav-line); background:#fff; box-shadow:0 0 0 3px rgba(108,71,255,.10); }
+  .gsearch input:disabled { opacity:.55; }
+  .top-r { margin-left:auto; display:flex; align-items:center; gap:10px; }
+  .btn { display:inline-flex; align-items:center; gap:7px; height:34px; padding:0 13px; border:1px solid var(--line); border-radius:9px; background:#fff; color:var(--text); font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; }
+  .btn:hover { border-color:var(--lav-line); background:#FCFBFF; }
+  .btn svg { width:14px; height:14px; }
+  .btn.primary { background:var(--purple); border-color:var(--purple); color:#fff; }
+  .btn.primary:hover { background:var(--purple-d); }
+  .icon-btn { position:relative; width:34px; height:34px; border:1px solid var(--line); border-radius:9px; background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#3E424D; }
+  .icon-btn svg { width:16px; height:16px; }
+  .bell-n { position:absolute; top:-6px; right:-6px; min-width:18px; height:18px; padding:0 5px; border-radius:999px; background:var(--purple); color:#fff; font-size:10.5px; font-weight:700; display:none; align-items:center; justify-content:center; border:2px solid #fff; }
+  .bell-n.show { display:flex; }
 
-  /* History: days */
-  .days { display:flex; flex-direction:column; gap:16px; }
-  .day { background:#fff; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
-  .day-h { display:flex; justify-content:space-between; align-items:center; gap:12px 24px; flex-wrap:wrap; padding:14px 20px 13px; border-bottom:1px solid #eee; }
-  .day-d { font-size:16.5px; font-weight:700; }
-  .day-t { font-size:13px; color:var(--dim); font-variant-numeric:tabular-nums; margin-top:2px; }
-  .day-r { display:flex; align-items:center; gap:12px; font-size:13px; color:var(--dim); font-variant-numeric:tabular-nums; }
+  /* ===== Page ===== */
+  main { flex:1; padding:28px 32px 120px; min-width:0; }
+  .page, #review, #dreview { max-width:1180px; }
+  .phead { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:22px; }
+  .phead h1 { font-size:26px; font-weight:700; letter-spacing:-.01em; }
+  .psub { font-size:13.5px; color:var(--muted); margin-top:8px; }
+  .phead-r { display:flex; gap:8px; flex-wrap:wrap; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:var(--r); }
+  .empty { padding:36px; color:var(--muted); font-size:14px; background:#fff; border:1px solid var(--line); border-radius:var(--r); }
+  .sec-h { font-size:15px; font-weight:700; margin:28px 0 12px; }
+
+  /* KPIs */
+  .kpis { display:grid; grid-template-columns:repeat(4,1fr); margin-bottom:18px; }
+  .kpi { padding:18px 20px 16px; border-left:1px solid var(--line); min-width:0; }
+  .kpi:first-child { border-left:none; }
+  .kl { font-size:12.5px; color:var(--muted); }
+  .kv { font-size:26px; font-weight:700; margin-top:10px; line-height:1.1; font-variant-numeric:tabular-nums; }
+  .kd { font-size:12px; font-weight:700; margin-top:8px; font-variant-numeric:tabular-nums; }
+  .kd span { font-weight:400; color:var(--faint); margin-left:3px; }
+  .kd.up { color:var(--green); } .kd.down { color:var(--red); } .kd.flat { color:var(--faint); font-weight:400; }
+
+  /* Chart card */
+  .chart-card { padding:20px 20px 14px; margin-bottom:18px; }
+  .cc-head { display:flex; align-items:center; gap:14px; padding-bottom:16px; border-bottom:1px solid var(--line2); }
+  .cc-icon { width:40px; height:40px; border-radius:50%; background:var(--lav); color:var(--purple); display:flex; align-items:center; justify-content:center; }
+  .cc-icon svg { width:18px; height:18px; }
+  .cc-big { font-size:15px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .cc-sub { font-size:12.5px; color:var(--muted); margin-top:3px; }
+  .chg { margin-left:auto; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .chg.up { background:var(--green-bg); color:var(--green); } .chg.down { background:var(--red-bg); color:var(--red); } .chg.flat { background:#F1F1F5; color:var(--muted); }
+  .cc-tools { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:14px 0 6px; }
+  .pills { display:flex; gap:6px; flex-wrap:wrap; }
+  .pill { height:28px; padding:0 12px; border:1px solid var(--line); border-radius:999px; background:#fff; color:#3E424D; font-size:12px; font-weight:600; cursor:pointer; }
+  .pill:hover { border-color:var(--lav-line); }
+  .pill.on { background:var(--lav); border-color:var(--lav-line); color:var(--purple); }
+  .cc-meta { display:flex; gap:18px; font-size:12.5px; color:var(--muted); }
+  .cc-meta b { color:var(--text); }
+  .legend { display:flex; gap:16px; font-size:12px; color:var(--muted); padding:6px 0 4px; flex-wrap:wrap; }
+  .legend i { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:-1px; }
+  .chart { display:block; width:100%; height:auto; margin-top:6px; }
+  .chart text { font-family:'Lato',sans-serif; fill:#8A8F9C; font-size:12px; }
+  .chart .cbar { transition:opacity .15s; }
+  .chart .cbar:hover { opacity:.82; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+  .grid21 { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); gap:18px; margin-bottom:18px; align-items:start; }
+  .mini { padding:18px 20px; min-width:0; }
+  .mini-h { display:flex; justify-content:space-between; align-items:baseline; gap:10px; font-size:14px; font-weight:700; margin-bottom:14px; }
+  .mini-h span { font-size:12px; font-weight:400; color:var(--faint); }
+  .donut-wrap { display:flex; align-items:center; gap:24px; flex-wrap:wrap; }
+  .donut { width:150px; height:150px; flex-shrink:0; }
+  .donut text { font-family:'Lato',sans-serif; }
+  .dl { flex:1; min-width:170px; display:flex; flex-direction:column; gap:10px; }
+  .dl-row { display:flex; align-items:center; gap:10px; font-size:13px; }
+  .dl-row i { width:10px; height:10px; border-radius:3px; flex-shrink:0; }
+  .dl-row .n { flex:1; color:#3E424D; }
+  .dl-row b { font-variant-numeric:tabular-nums; }
+  .dl-row em { font-style:normal; color:var(--faint); width:44px; text-align:right; font-variant-numeric:tabular-nums; }
+  .hb { display:flex; flex-direction:column; gap:12px; }
+  .hb-row { display:grid; grid-template-columns:minmax(80px,140px) minmax(0,1fr) 56px; gap:12px; align-items:center; font-size:13px; }
+  .hb-l { color:#3E424D; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .hb-bar { height:10px; background:#F0F0F4; border-radius:99px; overflow:hidden; }
+  .hb-bar i { display:block; height:100%; background:var(--purple); border-radius:99px; min-width:3px; }
+  .hb-v { text-align:right; font-weight:700; font-variant-numeric:tabular-nums; }
+  .nores { padding:30px 20px; text-align:center; color:var(--muted); font-size:13.5px; background:#fff; border:1px solid var(--line); border-radius:var(--r); }
+  .nores.sm { border:none; padding:20px 0; }
+  .counted { font-size:12.5px; color:var(--faint); margin-top:12px; }
+
+  /* ===== Daily breakdown ===== */
+  .days { display:flex; flex-direction:column; gap:14px; }
+  .day { background:#fff; border:1px solid var(--line); border-radius:var(--r); overflow:hidden; }
+  .day-h { display:flex; justify-content:space-between; align-items:center; gap:12px 24px; flex-wrap:wrap; padding:15px 20px 14px; border-bottom:1px solid var(--line2); }
+  .day-d { font-size:15px; font-weight:700; }
+  .day-t { font-size:12.5px; color:var(--muted); margin-top:3px; font-variant-numeric:tabular-nums; }
+  .day-r { display:flex; align-items:center; gap:12px; font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums; }
   .day-r b { font-weight:700; }
-  .mbar { width:120px; height:8px; border-radius:99px; overflow:hidden; display:flex; background:#eef2f7; flex-shrink:0; }
+  .mbar, .rbar { display:flex; overflow:hidden; background:#F0F0F4; border-radius:99px; }
+  .mbar { width:120px; height:8px; }
   .mbar span, .rbar span { display:block; height:100%; }
-  .mbar .a, .rbar .a { background:#1565C0; }
-  .mbar .d, .rbar .d { background:#d9534f; }
-  .ok-t { color:#1565C0; }
-  .no-t { color:#c0392b; }
-
-  /* Rates summary */
-  .rates { background:#fff; border:1px solid var(--line); border-radius:10px; padding:18px 20px 16px; margin:-4px 0 18px; }
-  .rates-top { display:flex; align-items:flex-end; gap:36px; flex-wrap:wrap; }
-  .rates-top .rv { font-size:30px; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; }
-  .rates-top .rl { font-size:13px; color:var(--dim); margin-top:5px; }
-  .rates-top .rn { margin-left:auto; font-size:12.5px; color:var(--dim); text-align:right; max-width:320px; line-height:1.45; }
-  .rbar { height:12px; border-radius:99px; overflow:hidden; display:flex; background:#eef2f7; margin:14px 0 10px; }
-  .rleg { display:flex; gap:22px; flex-wrap:wrap; font-size:13px; color:#555; }
-  .rleg i { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:7px; vertical-align:-1px; }
-  .bk { display:grid; grid-template-columns:auto minmax(0,1fr) 18px; gap:14px; align-items:center; padding:12px 20px; cursor:pointer; border-top:1px solid #f0f0f0; }
+  .mbar .a, .rbar .a { background:var(--purple); } .mbar .d, .rbar .d { background:var(--gray-bar); }
+  .ok-t { color:var(--purple); } .no-t { color:#6B6F7B; }
+  .bk { display:grid; grid-template-columns:auto minmax(0,1fr) 18px; gap:14px; align-items:center; padding:12px 20px; cursor:pointer; border-top:1px solid var(--line2); }
   .day-h + .bk { border-top:none; }
-  .bk:hover { background:#f7faff; }
-  .bk.open { background:var(--soft); }
-  .chip { min-width:36px; height:30px; padding:0 8px; border-radius:7px; font-size:15px; font-weight:700; display:flex; align-items:center; justify-content:center; font-variant-numeric:tabular-nums; }
-  .chip.ok { background:var(--soft); color:#1565C0; }
-  .bk.open .chip.ok { background:#1565C0; color:#fff; }
-  .chip.zero { background:#f1f1f1; color:#777; }
-  .chip.nf { background:var(--warnbg); color:var(--warn); }
-  .bk-txt { font-size:14.5px; color:var(--text); }
-  .bk-txt b { font-weight:600; }
-  .chev { width:16px; height:16px; color:#aaa; transition:transform .18s; }
-  .open > .chev { transform:rotate(90deg); color:#1565C0; }
-  .bk-list { display:none; background:#f8fafd; border-top:1px solid #e8edf4; }
+  .bk:hover { background:#FBFAFF; }
+  .bk.open { background:#FAF8FF; }
+  .chip { min-width:34px; height:28px; padding:0 8px; border-radius:8px; font-size:13.5px; font-weight:700; display:flex; align-items:center; justify-content:center; font-variant-numeric:tabular-nums; }
+  .chip.ok { background:var(--lav); color:var(--purple); }
+  .bk.open .chip.ok { background:var(--purple); color:#fff; }
+  .chip.zero, .chip.no { background:#F1F1F5; color:#6B6F7B; }
+  .chip.nf { background:var(--amber-bg); color:var(--amber); }
+  .bk-txt { font-size:14px; } .bk-txt b { font-weight:700; }
+  .chev { width:16px; height:16px; color:#A6AAB4; transition:transform .18s; }
+  .open > .chev { transform:rotate(90deg); color:var(--purple); }
+  .bk-list { display:none; background:#FCFCFD; border-top:1px solid var(--line2); }
   .bk-list.open { display:block; }
-  .pr { display:grid; grid-template-columns:170px minmax(0,1fr) 54px 18px; gap:14px; align-items:center; padding:10px 20px 10px 70px; cursor:pointer; border-top:1px solid #edf1f6; }
+  .pr { display:grid; grid-template-columns:170px minmax(0,1fr) 54px 18px; gap:14px; align-items:center; padding:10px 20px 10px 68px; cursor:pointer; border-top:1px solid var(--line2); }
   .pr:first-child { border-top:none; }
-  .pr:hover { background:#eef4fc; }
-  .pr.open { background:#e6effb; }
-  .pr-sku { font-size:13.5px; font-weight:600; color:var(--text); font-variant-numeric:tabular-nums; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .pr-title { font-size:13.5px; color:#59626d; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .pr-time { font-size:12.5px; color:var(--dim); text-align:right; font-variant-numeric:tabular-nums; }
-  .pr-img { display:none; padding:6px 20px 20px 70px; background:#e6effb; }
+  .pr:hover { background:#FAF8FF; } .pr.open { background:var(--lav); }
+  .pr-sku { font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-variant-numeric:tabular-nums; }
+  .pr-title { font-size:13px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .pr-time { font-size:12px; color:var(--faint); text-align:right; font-variant-numeric:tabular-nums; }
+  .pr-img { display:none; padding:6px 20px 20px 68px; background:var(--lav); }
   .pr-img.open { display:block; }
-  .dlabel { font-size:13px; font-weight:600; color:var(--text); margin:6px 0 12px; }
-  .dlabel span { font-weight:400; color:var(--dim); }
+  .dlabel { font-size:13px; font-weight:700; margin:6px 0 12px; } .dlabel span { font-weight:400; color:var(--muted); }
   .thumbs { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
-  .thumb { display:block; background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; position:relative; }
-  .thumb:hover { border-color:#1565C0; }
+  .thumb { display:block; background:#fff; border:1px solid var(--line); border-radius:10px; overflow:hidden; position:relative; }
+  .thumb:hover { border-color:var(--purple); }
   .thumb .iw { height:150px; display:flex; align-items:center; justify-content:center; padding:10px; }
   .thumb img { max-width:100%; max-height:100%; object-fit:contain; }
-  .thumb .tag { position:absolute; top:8px; left:8px; background:#1565C0; color:#fff; font-size:11.5px; font-weight:600; padding:3px 8px; border-radius:5px; }
-  .thumb .pos { position:absolute; top:8px; right:8px; background:#fff; border:1px solid var(--line); color:#666; font-size:11.5px; font-weight:600; padding:2px 7px; border-radius:5px; }
+  .thumb .tag { position:absolute; top:8px; left:8px; background:var(--purple); color:#fff; font-size:11px; font-weight:700; padding:3px 8px; border-radius:6px; }
+  .thumb .pos { position:absolute; top:8px; right:8px; background:#fff; border:1px solid var(--line); color:var(--muted); font-size:11px; font-weight:700; padding:2px 7px; border-radius:6px; }
   .thumb.dim img { opacity:.45; filter:grayscale(1); }
-  .nfnote { display:flex; gap:12px; align-items:flex-start; background:#fff; border:1px solid #f3d9b1; border-radius:8px; padding:14px 16px; font-size:13.5px; color:#5c4a33; max-width:560px; }
-  .nfnote svg { width:18px; height:18px; color:var(--warn); flex-shrink:0; margin-top:1px; }
-  .nfnote b { display:block; color:var(--text); font-weight:600; margin-bottom:2px; }
+  .nfnote { display:flex; gap:12px; align-items:flex-start; background:#fff; border:1px solid #F3D9B1; border-radius:10px; padding:14px 16px; font-size:13.5px; color:#5c4a33; max-width:560px; }
+  .nfnote svg { width:18px; height:18px; color:var(--amber); margin-top:1px; }
+  .nfnote b { display:block; color:var(--text); margin-bottom:2px; }
 
-  /* All products: distribution */
-  .dist { background:#fff; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
-  .drow { display:grid; grid-template-columns:120px minmax(0,1fr) 100px 64px 18px; gap:18px; align-items:center; padding:13px 20px; border-top:1px solid #eee; }
-  .drow.head { border-top:none; background:#f7f8fa; font-size:12.5px; font-weight:600; color:var(--dim); padding-top:11px; padding-bottom:11px; }
-  .drow .lab { font-size:14.5px; font-weight:600; }
-  .drow .lab.warn { color:var(--warn); }
-  .bar { height:10px; background:#eef2f7; border-radius:99px; overflow:hidden; }
-  .bar span { display:block; height:100%; background:#1565C0; border-radius:99px; min-width:3px; }
-  .bar.warn span { background:#e08a1e; }
-  .drow .cnt { text-align:right; font-size:15px; font-weight:700; font-variant-numeric:tabular-nums; }
-  .drow .pct { text-align:right; font-size:13px; color:var(--dim); font-variant-numeric:tabular-nums; }
-  .drow.head .cnt, .drow.head .pct { font-size:12.5px; font-weight:600; }
-  .counted { font-size:12.5px; color:var(--dim); margin-top:12px; }
-  .drow.click { cursor:pointer; }
-  .drow.click:hover { background:#f7faff; }
-  .drow.open { background:var(--soft); }
-  .drow:focus-visible { outline:2px solid #1565C0; outline-offset:-2px; }
-  .dlist { display:none; background:#f8fafd; border-top:1px solid #e8edf4; }
+  /* ===== All products ===== */
+  .dist { overflow:hidden; }
+  .drow { display:grid; grid-template-columns:110px minmax(0,1fr) 90px 60px 18px; gap:16px; align-items:center; padding:13px 20px; border-top:1px solid var(--line2); }
+  .drow.head { border-top:none; background:#FAFAFB; font-size:12px; font-weight:700; color:var(--muted); padding-top:11px; padding-bottom:11px; }
+  .drow .lab { font-size:14px; font-weight:700; } .drow .lab.warn { color:var(--red); }
+  .bar { height:10px; background:#F0F0F4; border-radius:99px; overflow:hidden; }
+  .bar span { display:block; height:100%; background:var(--purple); border-radius:99px; min-width:3px; }
+  .bar.warn span { background:var(--red); }
+  .drow .cnt { text-align:right; font-size:14.5px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .drow .pct { text-align:right; font-size:12.5px; color:var(--faint); font-variant-numeric:tabular-nums; }
+  .drow.head .cnt, .drow.head .pct { font-size:12px; font-weight:700; color:var(--muted); }
+  .drow.click { cursor:pointer; } .drow.click:hover { background:#FBFAFF; } .drow.open { background:var(--lav); }
+  .dlist { display:none; background:#FCFCFD; border-top:1px solid var(--line2); }
   .dlist.open { display:block; }
   .dl-bar { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; padding:12px 20px; }
-  .dl-bar input { flex:1; min-width:180px; max-width:340px; border:1px solid var(--line); border-radius:7px; padding:8px 11px; font:400 13.5px 'Outfit',sans-serif; color:var(--text); background:#fff; }
-  .dl-bar input:focus { outline:none; border-color:#1565C0; }
-  .dl-count { font-size:13px; color:var(--dim); font-variant-numeric:tabular-nums; }
-  .btn-sm { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); background:#fff; color:#1565C0; font:600 12.5px 'Outfit',sans-serif; padding:7px 12px; border-radius:7px; cursor:pointer; white-space:nowrap; }
-  .btn-sm:hover { border-color:#1565C0; }
-  .btn-sm.solid { background:#1565C0; color:#fff; border-color:#1565C0; }
+  .dl-bar input { flex:1; min-width:180px; max-width:340px; height:34px; border:1px solid var(--line); border-radius:8px; padding:0 11px; font:400 13px 'Lato',sans-serif; color:var(--text); background:#fff; }
+  .dl-bar input:focus { outline:none; border-color:var(--lav-line); }
+  .dl-count { font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums; }
+  .btn-sm { display:inline-flex; align-items:center; gap:6px; height:32px; border:1px solid var(--line); background:#fff; color:var(--text); font-size:12.5px; font-weight:600; padding:0 12px; border-radius:8px; cursor:pointer; white-space:nowrap; }
+  .btn-sm:hover { border-color:var(--lav-line); }
+  .btn-sm.solid { background:var(--purple); color:#fff; border-color:var(--purple); }
   .btn-sm svg { width:13px; height:13px; }
-  .hbtns { display:flex; gap:8px; flex-wrap:wrap; }
-  .sr { display:grid; grid-template-columns:190px minmax(0,1fr) 150px 26px; gap:14px; align-items:center; padding:9px 20px; border-top:1px solid #edf1f6; font-size:13.5px; }
-  .sr .sku { font-weight:600; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-variant-numeric:tabular-nums; }
-  .sr .sku.none { color:#aaa; font-weight:500; }
-  .sr .ti { color:#59626d; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .sr .ve { color:var(--dim); font-size:12.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .sr a { color:#aaa; display:flex; }
-  .sr a:hover { color:#1565C0; }
-  .sr a svg { width:15px; height:15px; }
-  .more { display:flex; justify-content:center; padding:12px 0 16px; border-top:1px solid #edf1f6; }
+  .sr { display:grid; grid-template-columns:190px minmax(0,1fr) 150px 26px; gap:14px; align-items:center; padding:9px 20px; border-top:1px solid var(--line2); font-size:13px; }
+  .sr .sku { font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .sr .sku.none { color:var(--faint); font-weight:400; }
+  .sr .ti { color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .sr .ve { color:var(--faint); font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .sr a { color:#A6AAB4; display:flex; } .sr a:hover { color:var(--purple); } .sr a svg { width:15px; height:15px; }
+  .more { display:flex; justify-content:center; padding:12px 0 16px; border-top:1px solid var(--line2); }
 
-  /* Mode switch: Images / Descriptions */
-  #modes { display:flex; gap:4px; margin:0 12px 8px; padding:4px; background:rgba(0,0,0,.16); border-radius:9px; }
-  #modes button { flex:1; border:none; background:none; color:#dbe7f7; font:700 12.5px 'Outfit',sans-serif; padding:8px 6px; border-radius:6px; cursor:pointer; }
-  #modes button:hover { color:#fff; }
-  #modes button.on { background:#FFD400; color:#0d3c78; }
-  #modes button:focus-visible { outline:2px solid #fff; outline-offset:2px; }
+  /* ===== Image review ===== */
+  .pane { display:none; background:#fff; border:1px solid var(--line); border-radius:var(--r); padding:22px; }
+  .pane.active { display:block; }
+  .t { font-size:18px; font-weight:700; line-height:1.35; }
+  .meta2 { font-size:12.5px; color:var(--muted); margin-top:6px; }
+  .imgs { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; margin-top:16px; }
+  .cand { border:1.5px solid var(--line); border-radius:12px; overflow:hidden; cursor:pointer; position:relative; background:#fff; transition:transform .12s, border-color .12s, box-shadow .12s; }
+  .cand:hover { transform:translateY(-2px); border-color:var(--lav-line); }
+  .cand .imgwrap { height:220px; display:flex; align-items:center; justify-content:center; padding:10px; }
+  .cand img { max-width:100%; max-height:100%; object-fit:contain; }
+  .cand .meta { font-size:11.5px; color:var(--faint); padding:7px 12px; border-top:1px solid var(--line2); }
+  .cand.approved { border-color:var(--purple); box-shadow:0 0 0 3px rgba(108,71,255,.12); }
+  .tick { position:absolute; top:10px; left:10px; width:26px; height:26px; border-radius:8px; background:var(--purple); color:#fff; display:none; align-items:center; justify-content:center; font-weight:800; font-size:12px; }
+  .cand.approved .tick { display:flex; }
+  .mainbtn { position:absolute; top:10px; right:10px; background:#fff; border:1px solid var(--line); font-size:12px; font-weight:700; padding:4px 11px; border-radius:7px; cursor:pointer; color:var(--muted); }
+  .cand.ismain .mainbtn { background:var(--purple); color:#fff; border-color:var(--purple); }
+  .nav2 { display:flex; gap:10px; margin-top:22px; align-items:center; flex-wrap:wrap; }
+  .nav2 button { height:40px; border:1px solid var(--line); border-radius:9px; padding:0 18px; font-size:13.5px; font-weight:700; cursor:pointer; background:#fff; color:var(--text); }
+  .nav2 button:hover { border-color:var(--lav-line); }
+  .nav2 .back { color:var(--muted); }
+  .nav2 .next, .nav2 .fin { background:var(--purple); color:#fff; border-color:var(--purple); }
+  .nav2 .next:hover, .nav2 .fin:hover { background:var(--purple-d); }
+  .nav2 .none { margin-left:auto; color:var(--purple); }
+  .pane.rejected .cand { opacity:.35; pointer-events:none; }
+  .pane.rejected .nav2 .none { background:#3E424D; color:#fff; border-color:#3E424D; }
+  #bar, #dbar { position:fixed; bottom:0; left:var(--side); right:0; background:rgba(255,255,255,.96); backdrop-filter:blur(6px); border-top:1px solid var(--line); padding:12px 32px; display:flex; gap:14px; align-items:center; z-index:10; }
+  #bar > button, #dbar > button { height:40px; background:var(--purple); color:#fff; border:none; border-radius:9px; padding:0 20px; font-size:14px; font-weight:700; cursor:pointer; }
+  #bar > button:hover, #dbar > button:hover { background:var(--purple-d); }
+  #bar .n, #dbar .n { font-size:12.5px; color:var(--muted); }
 
-  /* Description review */
-  .dpane { display:none; }
+  /* ===== Description review ===== */
+  .dpane { display:none; background:#fff; border:1px solid var(--line); border-radius:var(--r); padding:22px; }
   .dpane.active { display:block; }
-  .dsrc { font-size:12.5px; color:var(--dim); margin-top:6px; }
-  .dsrc a { color:#1565C0; }
-  .dcols { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.25fr); gap:16px; margin-top:14px; }
-  .dcol { background:#fff; border:1px solid var(--line); border-radius:8px; display:flex; flex-direction:column; min-width:0; }
-  .dcol.new { border:2px solid var(--line); }
-  .dpane.approved .dcol.new { border-color:#1565C0; }
+  .dsrc { font-size:12.5px; color:var(--muted); margin-top:6px; }
+  .dsrc a { color:var(--purple); }
+  .dcols { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.25fr); gap:16px; margin-top:16px; }
+  .dcol { border:1px solid var(--line); border-radius:10px; display:flex; flex-direction:column; min-width:0; background:#fff; }
+  .dcol.new { border:1.5px solid var(--line); }
+  .dpane.approved .dcol.new { border-color:var(--purple); box-shadow:0 0 0 3px rgba(108,71,255,.10); }
   .dpane.declined .dcol.new { opacity:.5; }
-  .dcol-h { display:flex; align-items:center; gap:10px; padding:10px 14px; border-bottom:1px solid #eee; font-size:13px; font-weight:600; color:var(--text); }
-  .dcol-h span { font-weight:400; color:var(--dim); font-size:12px; }
-  .htmlbtn { margin-left:auto; border:1px solid var(--line); background:#fff; color:#1565C0; font:600 12px 'Outfit',sans-serif; padding:4px 10px; border-radius:6px; cursor:pointer; }
+  .dcol-h { display:flex; align-items:center; gap:10px; padding:10px 14px; border-bottom:1px solid var(--line2); font-size:13px; font-weight:700; background:#FAFAFB; border-radius:10px 10px 0 0; }
+  .dcol-h span { font-weight:400; color:var(--faint); font-size:12px; }
+  .htmlbtn { margin-left:auto; height:28px; border:1px solid var(--line); background:#fff; color:var(--purple); font-size:12px; font-weight:700; padding:0 10px; border-radius:7px; cursor:pointer; }
   .dbody, .ddesc { padding:14px 16px; font-size:14px; line-height:1.6; color:var(--text); overflow:auto; }
-  .dbody { max-height:560px; }
-  .dbody.cur { color:#59626d; }
+  .dbody { max-height:600px; }
+  .dbody.cur { color:var(--muted); }
   .dbody.edit { outline:none; min-height:260px; }
-  .dbody.edit:focus { box-shadow:inset 0 0 0 2px rgba(21,101,192,.15); }
+  .dbody.edit:focus { box-shadow:inset 0 0 0 2px rgba(108,71,255,.15); }
   .dbody h2, .dbody h3, .dbody h4, .ddesc h2, .ddesc h3, .ddesc h4 { font-size:15px; margin:14px 0 6px; }
   .dbody p, .ddesc p { margin:0 0 10px; }
   .dbody ul, .dbody ol, .ddesc ul, .ddesc ol { margin:0 0 10px; padding-left:20px; }
   .dbody li, .ddesc li { margin:3px 0; }
   .dbody table, .ddesc table { border-collapse:collapse; margin-bottom:10px; }
-  .dbody td, .dbody th, .ddesc td, .ddesc th { border:1px solid #eee; padding:4px 8px; text-align:left; }
-  .dbody .none { color:#aaa; font-style:italic; }
-  .dhtml { width:100%; min-height:420px; border:none; padding:14px 16px; font:12.5px/1.5 ui-monospace,Menlo,monospace; color:var(--text); resize:vertical; outline:none; border-radius:0 0 8px 8px; }
-  .nav2 .dno { margin-left:auto; color:#c0392b; }
-  .nav2 .dyes { color:#1565C0; border-color:#1565C0; }
-  .dpane.approved .nav2 .dyes { background:#1565C0; color:#fff; }
-  .dpane.declined .nav2 .dno { background:#c0392b; color:#fff; border-color:#c0392b; }
-  .chip.no { background:#fdecea; color:#c0392b; }
-  .bk.open .chip.no { background:#c0392b; color:#fff; }
-  .ddesc { background:#fff; border:1px solid var(--line); border-radius:8px; max-height:440px; max-width:820px; }
-  .ddesc.dim { color:#8a8f96; }
+  .dbody td, .dbody th, .ddesc td, .ddesc th { border:1px solid var(--line2); padding:4px 8px; text-align:left; }
+  .dbody .none { color:var(--faint); font-style:italic; }
+  .dhtml { width:100%; min-height:440px; border:none; padding:14px 16px; font:12.5px/1.5 ui-monospace,Menlo,monospace; color:var(--text); resize:vertical; outline:none; border-radius:0 0 10px 10px; }
+  .nav2 .dno { margin-left:auto; color:var(--red); }
+  .nav2 .dyes { color:var(--purple); border-color:var(--lav-line); }
+  .dpane.approved .nav2 .dyes { background:var(--purple); color:#fff; border-color:var(--purple); }
+  .dpane.declined .nav2 .dno { background:var(--red); color:#fff; border-color:var(--red); }
+  .ddesc { background:#fff; border:1px solid var(--line); border-radius:10px; max-height:460px; max-width:860px; }
+  .ddesc.dim { color:var(--faint); }
 
-  @media (max-width:1000px){ .dcols { grid-template-columns:1fr; } }
+  @media (max-width:1100px) { .dcols { grid-template-columns:1fr; } }
+  @media (max-width:980px) {
+    .grid2, .grid21 { grid-template-columns:1fr; }
+    .kpis { grid-template-columns:repeat(2,1fr); }
+    .kpi:nth-child(3) { border-left:none; }
+    .kpi:nth-child(n+3) { border-top:1px solid var(--line); }
+    .pr { grid-template-columns:minmax(0,1fr) 18px; padding-left:20px; }
+    .pr .pr-title, .pr .pr-time { display:none; }
+    .pr-img { padding-left:20px; }
+    .drow { grid-template-columns:90px minmax(0,1fr) 70px 18px; }
+    .drow .pct { display:none; }
+    .sr { grid-template-columns:130px minmax(0,1fr) 26px; } .sr .ve { display:none; }
+    .logo b { display:none; }
+  }
+  @media (max-width:760px) {
+    :root { --side:68px; }
+    .bt, .tile span, #tabs .lbl, #list, #dlist, #hside, #prog, #dprog, .foot-link span { display:none !important; }
+    .brand { justify-content:center; padding:14px 0; }
+    .tiles { grid-template-columns:1fr; padding:10px; }
+    #tabs > button { justify-content:center; padding:10px 0; }
+    .badge { position:absolute; margin:-22px 0 0 22px; }
+    .foot-link { justify-content:center; }
+    main { padding:20px 16px 110px; }
+    .top { padding:0 12px; gap:10px; }
+    .top-r .btn span { display:none; }
+    #bar, #dbar { padding:10px 14px; }
+    #bar .n, #dbar .n { display:none; }
+  }
+  @media (prefers-reduced-motion:reduce) { * { transition:none !important; } }
 
   /* Storefront description styling (same as theme asset at-desc.css) */
-/* Abed Tahan — long product description styling (.at-desc) */
+  /* Abed Tahan — long product description styling (.at-desc) */
   .at-desc {
     --at-blue: #1565C0;
     --at-yellow: #FFD400;
@@ -269,9 +349,6 @@
   .at-desc .at-lead { font-size: 17px; line-height: 1.65; color: var(--at-ink); }
   
   .at-desc h2 {
-    display: flex;
-    align-items: center;
-    gap: 10px;
     margin: 36px 0 14px;
     font-size: 20px;
     line-height: 1.3;
@@ -279,13 +356,6 @@
     letter-spacing: normal;
     text-transform: none;
     color: var(--at-ink);
-  }
-  .at-desc h2::before {
-    content: "";
-    flex: 0 0 4px;
-    height: 20px;
-    border-radius: 2px;
-    background: var(--at-yellow);
   }
   
   /* Key features: two-column cards with a check mark */
@@ -384,68 +454,104 @@
     .at-desc .at-faq summary::after { transition: none; }
   }
   
-  @media (prefers-reduced-motion:reduce){ * { transition:none !important; } }
-  @media (max-width:860px){
-    .summary, .summary.s4 { grid-template-columns:repeat(2,1fr); }
-    .summary > div:nth-child(odd) { border-left:none; }
-    .summary > div:nth-child(n+3) { border-top:1px solid #eee; }
-    .summary:not(.s4) > div:last-child { grid-column:1 / -1; }
-    .pr { grid-template-columns:minmax(0,1fr) 18px; padding-left:20px; }
-    .pr .pr-title, .pr .pr-time { display:none; }
-    .pr-img { padding-left:20px; }
-    .drow { grid-template-columns:90px minmax(0,1fr) 70px 18px; }
-    .sr { grid-template-columns:130px minmax(0,1fr) 26px; }
-    .sr .ve { display:none; }
-    .drow .pct { display:none; }
-  }
-  @media (max-width:700px){ aside{width:66px} aside .logo, #list button .lbl, #dlist button .lbl, #prog, #dprog, #tabs .lbl, #hside{display:none} #modes{flex-direction:column; margin:12px 8px 0} #modes button{font-size:10.5px; padding:6px 2px} #tabs{margin:12px 8px} #tabs button{justify-content:center} #bar, #dbar{left:66px} main{padding:20px 16px 100px} }
 </style>
 </head>
 <body>
 <aside>
-  <div class="logo"><img style="width:100%; margin: auto;" src="https://abedtahan.com/cdn/shop/files/AT_Logo_400x200_Transparent.png?v=1732612010&amp;width=250"><span id="batchlabel" style="display:block;margin-top:8px">Loading...</span></div>
-  <div id="modes">
-    <button id="mode-img" class="on" onclick="setMode('img')">Images</button>
-    <button id="mode-desc" onclick="setMode('desc')">Descriptions</button>
+  <div class="brand">
+    <div class="av">AT</div>
+    <div class="bt"><b>Abed Tahan</b><span id="batchlabel">Loading…</span></div>
   </div>
-  <nav id="tabs">
-    <button id="tab-review" data-mode="img" class="on" onclick="setView('review')" title="Review">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      <span class="lbl">Review</span>
+  <div class="tiles">
+    <button id="mode-img" class="tile on" onclick="setMode('img')" title="Images">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>
+      <span>Images</span>
     </button>
-    <button id="tab-history" data-mode="img" onclick="setView('history')" title="History">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>
-      <span class="lbl">History</span>
+    <button id="mode-desc" class="tile" onclick="setMode('desc')" title="Descriptions">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/></svg>
+      <span>Descriptions</span>
     </button>
-    <button id="tab-products" data-mode="img" onclick="setView('products')" title="All products">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>
-      <span class="lbl">All products</span>
-    </button>
-    <button id="tab-dreview" data-mode="desc" style="display:none" onclick="setView('dreview')" title="Review">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h10"/></svg>
-      <span class="lbl">Review</span>
-    </button>
-    <button id="tab-dhistory" data-mode="desc" style="display:none" onclick="setView('dhistory')" title="History">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>
-      <span class="lbl">History</span>
-    </button>
-  </nav>
-  <div id="list"></div>
-  <div id="dlist" style="display:none"></div>
+    <a class="tile" href="https://admin.shopify.com/store/jad-b-2/products" target="_blank" rel="noopener" title="Shopify products">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1 13H7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+      <span>Shopify</span>
+    </a>
+  </div>
+  <div class="side-scroll">
+    <nav id="tabs">
+      <button id="tab-review" data-mode="img" class="on" onclick="setView('review')" title="Review">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        <span class="lbl">Review</span><span class="badge" id="badge-review"></span>
+      </button>
+      <div id="list"></div>
+      <button id="tab-history" data-mode="img" onclick="setView('history')" title="History">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>
+        <span class="lbl">History</span>
+      </button>
+      <button id="tab-products" data-mode="img" onclick="setView('products')" title="All products">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>
+        <span class="lbl">All products</span>
+      </button>
+      <button id="tab-dreview" data-mode="desc" style="display:none" onclick="setView('dreview')" title="Review">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h10"/></svg>
+        <span class="lbl">Review</span><span class="badge" id="badge-dreview"></span>
+      </button>
+      <div id="dlist" style="display:none"></div>
+      <button id="tab-dhistory" data-mode="desc" style="display:none" onclick="setView('dhistory')" title="History">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>
+        <span class="lbl">History</span>
+      </button>
+    </nav>
+  </div>
   <div id="hside"></div>
-  <div id="prog"><span id="ptxt">0 / 0 reviewed</span><div class="track"><div class="fill" id="pfill"></div></div></div>
-  <div id="dprog" style="display:none"><span id="dptxt">0 / 0 reviewed</span><div class="track"><div class="fill" id="dpfill"></div></div></div>
+  <div class="side-foot">
+    <div id="prog"><span id="ptxt">0 / 0 reviewed</span><div class="track"><div class="fill" id="pfill"></div></div></div>
+    <div id="dprog" style="display:none"><span id="dptxt">0 / 0 reviewed</span><div class="track"><div class="fill" id="dpfill"></div></div></div>
+    <a class="foot-link" href="https://admin.shopify.com/store/jad-b-2" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      <span>Shopify admin</span>
+    </a>
+    <a class="foot-link" href="https://abedtahan.com" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18"/></svg>
+      <span>View store</span>
+    </a>
+  </div>
 </aside>
-<main>
-  <div id="review"><div class="empty">Loading pending items…</div></div>
-  <div id="history" class="page" style="display:none"></div>
-  <div id="products" class="page" style="display:none"></div>
-  <div id="dreview" style="display:none"><div class="empty">Loading descriptions…</div></div>
-  <div id="dhistory" class="page" style="display:none"></div>
-</main>
+<div class="shell">
+  <header class="top">
+    <div class="logo"><span class="lg">AT</span><b>Content Review</b></div>
+    <label class="gsearch">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="gsearch" type="search" placeholder="Filter products to review…" oninput="onGlobalSearch(this.value)">
+    </label>
+    <div class="top-r">
+      <button class="btn" onclick="refreshView()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+        <span>Refresh</span>
+      </button>
+      <button class="icon-btn" onclick="setView(mode === 'desc' ? 'dreview' : 'review')" title="Pending reviews">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+        <span class="bell-n" id="bellCount"></span>
+      </button>
+      <div class="av sm">AT</div>
+    </div>
+  </header>
+  <main>
+    <div id="review">
+      <div class="phead"><div><h1>Image review</h1><div class="psub" id="reviewSub">Loading…</div></div></div>
+      <div id="reviewBody"><div class="empty">Loading pending items…</div></div>
+    </div>
+    <div id="history" class="page" style="display:none"></div>
+    <div id="products" class="page" style="display:none"></div>
+    <div id="dreview" style="display:none">
+      <div class="phead"><div><h1>Description review</h1><div class="psub" id="dreviewSub">Loading…</div></div></div>
+      <div id="dreviewBody"><div class="empty">Loading descriptions…</div></div>
+    </div>
+    <div id="dhistory" class="page" style="display:none"></div>
+  </main>
+</div>
 <div id="bar" style="display:none">
   <button onclick="submitAll()">Confirm & Upload to Shopify</button>
-  <span class="n" id="exnote">Click images to approve · "Main" = cover photo · "None good" if all bad</span>
+  <span class="n" id="exnote">Click images to approve · "Main" = cover photo · "None are good" if all bad</span>
 </div>
 <div id="dbar" style="display:none">
   <button onclick="dsubmit()">Confirm & Update Shopify</button>
@@ -465,7 +571,7 @@ const DHISTORY_URL = "https://n8n.srv838782.hstgr.cloud/webhook/desc-review-hist
 let DATA = [];
 const sel = {};
 const rejected = new Set();
-const main = document.getElementById('review');
+const main = document.getElementById('reviewBody');
 const list = document.getElementById('list');
 let view = 'review';
 
@@ -689,7 +795,14 @@ function setMode(m) {
 }
 
 function updateBatchLabel() {
-  document.getElementById('batchlabel').textContent = (mode === 'desc' ? DDATA.length : DATA.length) + ' pending';
+  const total = DATA.length + DDATA.length;
+  document.getElementById('batchlabel').textContent = total ? `${num(total)} waiting for review` : 'All caught up';
+  setBadge('badge-review', DATA.length);
+  setBadge('badge-dreview', DDATA.length);
+  const bell = document.getElementById('bellCount');
+  bell.textContent = total; bell.classList.toggle('show', total > 0);
+  document.getElementById('reviewSub').textContent = `${todayLabel()} · ${DATA.length ? plural(DATA.length, 'product', 'products') + ' waiting for images' : 'Nothing waiting right now'}`;
+  document.getElementById('dreviewSub').textContent = `${todayLabel()} · ${DDATA.length ? plural(DDATA.length, 'product', 'products') + ' waiting for a description' : (DLOADED ? 'Nothing waiting right now' : 'Open to load')}`;
 }
 
 function setView(v) {
@@ -708,12 +821,158 @@ function setView(v) {
   document.getElementById('bar').style.display = (v === 'review' && DATA.length) ? 'flex' : 'none';
   document.getElementById('dbar').style.display = (v === 'dreview' && DDATA.length) ? 'flex' : 'none';
   updateBatchLabel();
+  syncSearch(v);
   window.scrollTo(0, 0);
   if (v === 'history') loadHistory();
   if (v === 'products') loadProducts(false);
   if (v === 'dreview' && !DLOADED) dload();
   if (v === 'dhistory') dloadHistory();
 }
+
+// ================= Charts & shared UI =================
+const C = { purple: '#6C47FF', gray: '#C9C9D3', lav: '#CFC3FF', red: '#E5484D', amber: '#F5A524', grid: '#ECECF1' };
+const IMG_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>';
+const DOC_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/></svg>';
+
+function lastDays(n) {
+  const out = [], t = new Date();
+  t.setHours(0, 0, 0, 0);
+  for (let i = n - 1; i >= 0; i--) { const x = new Date(t); x.setDate(t.getDate() - i); out.push(dayKey(x)); }
+  return out;
+}
+const inDays = (list, keys) => { const s = new Set(keys); return list.filter(p => s.has(dayKey(p.at))); };
+function groupDay(list) { const g = {}; list.forEach(p => { const k = dayKey(p.at); (g[k] = g[k] || []).push(p); }); return g; }
+function shortDay(k, n) {
+  const [y, m, d] = k.split('-').map(Number);
+  const x = new Date(y, m - 1, d);
+  return n <= 7 ? x.toLocaleDateString('en-GB', { weekday: 'short' }) : x.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+const todayLabel = () => new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+function pctChange(a, b) { if (!b) return a ? null : 0; return Math.round((a - b) / b * 100); }
+function changePill(ch) {
+  if (ch === null) return '<span class="chg up">New</span>';
+  if (!ch) return '<span class="chg flat">0%</span>';
+  return `<span class="chg ${ch > 0 ? 'up' : 'down'}">${ch > 0 ? '↗ +' : '↘ '}${ch}%</span>`;
+}
+function weekDelta(n, invert) {
+  if (!n) return '<div class="kd flat">No change this week</div>';
+  return `<div class="kd ${invert ? 'down' : 'up'}">↗ +${num(n)}<span>this week</span></div>`;
+}
+function ptsDelta(rc, rp) {
+  if (!rc.base || !rp.base) return '<div class="kd flat">Not enough data yet</div>';
+  const d = rc.ap - rp.ap;
+  if (!d) return '<div class="kd flat">→ 0 pts<span>vs last week</span></div>';
+  return `<div class="kd ${d > 0 ? 'up' : 'down'}">${d > 0 ? '↗ +' : '↘ '}${d} pts<span>vs last week</span></div>`;
+}
+const kpi = (l, v, d) => `<div class="kpi"><div class="kl">${l}</div><div class="kv">${v}</div>${d}</div>`;
+const phead = (t, s, right = '') => `<div class="phead"><div><h1>${t}</h1><div class="psub">${s}</div></div>${right ? `<div class="phead-r">${right}</div>` : ''}</div>`;
+const legend = items => `<div class="legend">${items.map(([n, c]) => `<span><i style="background:${c}"></i>${n}</span>`).join('')}</div>`;
+
+function niceScale(max) {
+  if (max <= 4) return { top: 4, step: 1 };
+  const raw = max / 4, p = Math.pow(10, Math.floor(Math.log10(raw))), n = raw / p;
+  const step = Math.ceil((n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p);
+  return { top: step * 4, step };
+}
+function labelEvery(n) { return n <= 10 ? 1 : n <= 16 ? 2 : Math.ceil(n / 8); }
+
+// Grouped bar chart. series: [{ name, color, values }]
+function barsSVG(labels, series) {
+  const W = 900, H = 300, L = 40, R = 8, T = 12, B = 30;
+  const { top, step } = niceScale(Math.max(0, ...series.flatMap(s => s.values)));
+  const n = labels.length, cw = (W - L - R) / n, gw = Math.min(cw * 0.66, 120), gap = series.length > 1 ? 6 : 0;
+  const bw = (gw - gap * (series.length - 1)) / series.length;
+  const y = v => T + (H - T - B) * (1 - v / top);
+  let g = '';
+  for (let i = 0; i <= 4; i++) {
+    const v = step * i, yy = y(v).toFixed(1);
+    g += `<line x1="${L}" x2="${W - R}" y1="${yy}" y2="${yy}" stroke="${C.grid}" ${i ? 'stroke-dasharray="4 4"' : ''}/>`;
+    g += `<text x="${L - 10}" y="${+yy + 4}" text-anchor="end">${num(v)}</text>`;
+  }
+  const every = labelEvery(n);
+  labels.forEach((lab, i) => {
+    const x0 = L + cw * i + (cw - gw) / 2;
+    series.forEach((s, j) => {
+      const v = s.values[i] || 0, yy = y(v), h = Math.max(0, H - B - yy);
+      if (h > 0) g += `<rect class="cbar" x="${(x0 + j * (bw + gap)).toFixed(1)}" y="${yy.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="${Math.min(4, bw / 3).toFixed(1)}" fill="${s.color}"><title>${esc(lab)} · ${esc(s.name)}: ${num(v)}</title></rect>`;
+    });
+    if (i % every === 0) g += `<text x="${(L + cw * i + cw / 2).toFixed(1)}" y="${H - 8}" text-anchor="middle">${esc(lab)}</text>`;
+  });
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Bar chart">${g}</svg>`;
+}
+
+// Line + area chart for a 0-100% series (null = no data that day)
+function lineSVG(labels, vals, color) {
+  const pts0 = vals.map((v, i) => v === null ? null : i);
+  if (!pts0.some(v => v !== null)) return '<div class="nores sm">No reviews in this period yet</div>';
+  const W = 560, H = 260, L = 44, R = 14, T = 14, B = 30, n = labels.length;
+  const x = i => L + (n === 1 ? (W - L - R) / 2 : i * (W - L - R) / (n - 1));
+  const y = v => T + (H - T - B) * (1 - v / 100);
+  let g = '';
+  [0, 25, 50, 75, 100].forEach((v, k) => {
+    const yy = y(v).toFixed(1);
+    g += `<line x1="${L}" x2="${W - R}" y1="${yy}" y2="${yy}" stroke="${C.grid}" ${k ? 'stroke-dasharray="4 4"' : ''}/>`;
+    g += `<text x="${L - 10}" y="${+yy + 4}" text-anchor="end">${v}%</text>`;
+  });
+  const P = vals.map((v, i) => v === null ? null : [x(i), y(v), v, i]).filter(Boolean);
+  const d = 'M' + P.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' L');
+  if (P.length > 1) g += `<path d="${d} L${P[P.length - 1][0].toFixed(1)},${y(0)} L${P[0][0].toFixed(1)},${y(0)} Z" fill="${color}" opacity=".10"/>`;
+  g += `<path d="${d}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+  P.forEach(p => { g += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="4.5" fill="#fff" stroke="${color}" stroke-width="2.5"><title>${esc(labels[p[3]])}: ${p[2]}% approved</title></circle>`; });
+  const every = labelEvery(n);
+  labels.forEach((lab, i) => { if (i % every === 0) g += `<text x="${x(i).toFixed(1)}" y="${H - 8}" text-anchor="middle">${esc(lab)}</text>`; });
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Approve rate trend">${g}</svg>`;
+}
+
+function donutBlock(parts, center, centerSub) {
+  const total = parts.reduce((a, p) => a + p.value, 0);
+  const r = 52, c = 2 * Math.PI * r;
+  let off = 0, segs = '';
+  if (total) parts.filter(p => p.value).forEach(p => {
+    const len = p.value / total * c;
+    segs += `<circle r="${r}" cx="70" cy="70" fill="none" stroke="${p.color}" stroke-width="16" stroke-dasharray="${len.toFixed(2)} ${(c - len).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 70 70)"><title>${esc(p.label)}: ${num(p.value)}</title></circle>`;
+    off += len;
+  });
+  return `<div class="donut-wrap">
+    <svg class="donut" viewBox="0 0 140 140" role="img" aria-label="Breakdown">
+      <circle r="${r}" cx="70" cy="70" fill="none" stroke="#F0F0F4" stroke-width="16"/>${segs}
+      <text x="70" y="69" text-anchor="middle" font-size="22" font-weight="700" fill="#14161C">${center}</text>
+      <text x="70" y="88" text-anchor="middle" font-size="10.5" fill="#8A8F9C">${centerSub}</text>
+    </svg>
+    <div class="dl">${parts.map(p => `<div class="dl-row"><i style="background:${p.color}"></i><span class="n">${esc(p.label)}</span><b>${num(p.value)}</b><em>${total ? Math.round(p.value / total * 100) : 0}%</em></div>`).join('')}</div>
+  </div>`;
+}
+
+function hbars(rows) {
+  const max = Math.max(1, ...rows.map(r => r[1]));
+  return `<div class="hb">${rows.map(([l, v]) => `<div class="hb-row"><span class="hb-l" title="${esc(l)}">${esc(l)}</span><span class="hb-bar"><i style="width:${(v / max * 100).toFixed(1)}%"></i></span><span class="hb-v">${num(v)}</span></div>`).join('')}</div>`;
+}
+
+// Top bar search: filters the review list, or searches history
+function onGlobalSearch(v) {
+  const q = v.toLowerCase();
+  if (view === 'history') { hQuery = v; if (document.getElementById('hdays')) renderDays(); }
+  else if (view === 'dhistory') { dhQuery = v; if (document.getElementById('dhdays')) drenderDays(); }
+  else if (view === 'review' || view === 'dreview') {
+    (view === 'review' ? list : dlistEl).querySelectorAll('button').forEach(b => { b.style.display = b.textContent.toLowerCase().includes(q) ? '' : 'none'; });
+  }
+}
+function syncSearch(v) {
+  const gs = document.getElementById('gsearch');
+  const PH = { review: 'Filter products to review…', dreview: 'Filter products to review…', history: 'Search history by SKU, product or vendor…', dhistory: 'Search description history…', products: 'Use the filter inside each image group' };
+  gs.placeholder = PH[v] || '';
+  gs.disabled = v === 'products';
+  gs.value = v === 'history' ? hQuery : v === 'dhistory' ? dhQuery : '';
+  [list, dlistEl].forEach(el => el.querySelectorAll('button').forEach(b => { b.style.display = ''; }));
+}
+function refreshView() {
+  if (view === 'review') load();
+  else if (view === 'history') loadHistory(true);
+  else if (view === 'products') loadProducts(false);
+  else if (view === 'dreview') dload();
+  else if (view === 'dhistory') dloadHistory(true);
+}
+function setBadge(id, n) { const el = document.getElementById(id); el.textContent = n; el.classList.toggle('show', n > 0); }
 
 // ================= History =================
 let HIST = [];
@@ -736,48 +995,73 @@ async function loadHistory(force) {
   }
 }
 
+let hRange = 7;
+function setHRange(n) { hRange = n; renderHistory(); }
+
 function renderHistory() {
   const total = HIST.length;
-  const withImgs = HIST.filter(p => p.chosen.length).length;
   const imgs = HIST.reduce((a, p) => a + p.chosen.length, 0);
   const nf = HIST.filter(p => p.notFound).length;
-  const none = total - withImgs - nf;
   const R = rates(HIST);
+  const cur = inDays(HIST, lastDays(7)), prev = inDays(HIST, lastDays(14).slice(0, 7));
+  const keys = lastDays(hRange);
+  const inRange = inDays(HIST, keys), prevRange = inDays(HIST, lastDays(hRange * 2).slice(0, hRange));
+  const imgCount = l => l.reduce((a, p) => a + p.chosen.length, 0);
+  const byDay = groupDay(inRange);
+  const labels = keys.map(k => shortDay(k, hRange));
+  const approvedS = keys.map(k => (byDay[k] || []).filter(p => p.chosen.length).length);
+  const declinedS = keys.map(k => (byDay[k] || []).filter(p => !p.chosen.length && !p.notFound).length);
+  const rateS = keys.map(k => { const r = rates(byDay[k] || []); return r.base ? r.ap : null; });
+  const RR = rates(inRange);
+  const per = { 1: 0, 2: 0, 3: 0 };
+  HIST.forEach(p => { const n = p.chosen.length; if (n) per[Math.min(n, 3)]++; });
+  const vend = {};
+  HIST.forEach(p => { if (p.chosen.length) { const v = String(p.vendor || '').trim() || 'Unknown'; vend[v] = (vend[v] || 0) + p.chosen.length; } });
+  const topV = Object.entries(vend).sort((a, b) => b[1] - a[1]).slice(0, 6);
 
   hist.innerHTML = `
-    <div class="h-head">
-      <div>
-        <h1>Upload history</h1>
-        <div class="h-sub">What was uploaded to Shopify, day by day</div>
-      </div>
-      <button class="refresh" onclick="loadHistory(true)">${REFRESH_ICON}Refresh</button>
+    ${phead('Upload history', `${todayLabel()} · Images sent to Shopify across reviewed products`)}
+    <div class="card kpis">
+      ${kpi('Products reviewed', num(total), weekDelta(cur.length))}
+      ${kpi('Images uploaded', num(imgs), weekDelta(imgCount(cur)))}
+      ${kpi('Approve rate', R.base ? R.ap + '%' : '—', ptsDelta(rates(cur), rates(prev)))}
+      ${kpi('Not found online', num(nf), weekDelta(cur.filter(p => p.notFound).length, true))}
     </div>
-    <div class="summary">
-      <div><div class="v">${num(total)}</div><div class="l">Products reviewed</div></div>
-      <div><div class="v blue">${num(imgs)}</div><div class="l">Images uploaded</div></div>
-      <div><div class="v">${num(withImgs)}</div><div class="l">Products with images</div></div>
-      <div><div class="v">${num(none)}</div><div class="l">No image uploaded</div></div>
-      <div><div class="v warn">${num(nf)}</div><div class="l">Not found online</div></div>
-    </div>
-    ${R.base ? `<div class="rates">
-      <div class="rates-top">
-        <div><div class="rv ok-t">${R.ap}%</div><div class="rl">Approve rate</div></div>
-        <div><div class="rv no-t">${R.dp}%</div><div class="rl">Decline rate</div></div>
-        <div class="rn">Out of ${plural(R.base, 'reviewed product', 'reviewed products')}. Not-found products aren't counted.</div>
+    <div class="card chart-card">
+      <div class="cc-head">
+        <div class="cc-icon">${IMG_ICON}</div>
+        <div><div class="cc-big">${num(imgCount(inRange))}</div><div class="cc-sub">Images uploaded, last ${hRange} days</div></div>
+        ${changePill(pctChange(imgCount(inRange), imgCount(prevRange)))}
       </div>
-      <div class="rbar"><span class="a" style="width:${R.ap}%"></span><span class="d" style="width:${R.dp}%"></span></div>
-      <div class="rleg">
-        <span><i style="background:#1565C0"></i>${plural(R.a, 'product', 'products')} approved (1 or more images chosen)</span>
-        <span><i style="background:#d9534f"></i>${plural(R.d, 'product', 'products')} declined (no image chosen)</span>
+      <div class="cc-tools">
+        <div class="pills">${[7, 14, 30].map(n => `<button class="pill ${n === hRange ? 'on' : ''}" onclick="setHRange(${n})">${n} days</button>`).join('')}</div>
+        <div class="cc-meta"><span>Products <b>${num(inRange.length)}</b></span><span>Approve rate <b>${RR.base ? RR.ap + '%' : '—'}</b></span></div>
       </div>
-    </div>` : ''}
-    <div class="search">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="hsearch" type="search" placeholder="Search by SKU, product or vendor" value="${esc(hQuery)}">
+      ${legend([['Approved products', C.purple], ['Declined products', C.gray]])}
+      ${barsSVG(labels, [{ name: 'Approved', color: C.purple, values: approvedS }, { name: 'Declined', color: C.gray, values: declinedS }])}
     </div>
+    <div class="grid2">
+      <div class="card mini">
+        <div class="mini-h">Review outcome<span>All time</span></div>
+        ${donutBlock([{ label: 'Approved', value: R.a, color: C.purple }, { label: 'Declined', value: R.d, color: C.gray }, { label: 'Not found online', value: nf, color: C.lav }], R.base ? R.ap + '%' : '—', 'approved')}
+      </div>
+      <div class="card mini">
+        <div class="mini-h">Approve rate trend<span>Last ${hRange} days</span></div>
+        ${lineSVG(labels, rateS, C.purple)}
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card mini">
+        <div class="mini-h">Images per product<span>Approved products</span></div>
+        ${hbars([['1 image', per[1]], ['2 images', per[2]], ['3+ images', per[3]]])}
+      </div>
+      <div class="card mini">
+        <div class="mini-h">Top vendors<span>By images uploaded</span></div>
+        ${topV.length ? hbars(topV) : '<div class="nores sm">No uploads yet</div>'}
+      </div>
+    </div>
+    <div class="sec-h">Daily breakdown</div>
     <div id="hdays"></div>`;
-
-  document.getElementById('hsearch').addEventListener('input', e => { hQuery = e.target.value; renderDays(); });
   renderDays();
 }
 
@@ -924,42 +1208,45 @@ function renderProducts() {
   const total = PROD.total || 0;
   const totalImgs = PROD.totalImages || 0;
   const zero = (buckets.find(b => b.images === 0) || {}).products || 0;
+  const low = buckets.filter(b => b.images >= 1 && b.images <= 2).reduce((a, b) => a + b.products, 0);
+  const good = buckets.filter(b => b.images >= 3).reduce((a, b) => a + b.products, 0);
   const max = Math.max(1, ...buckets.map(b => b.products));
   const avg = total ? (totalImgs / total).toFixed(1) : '0';
   const hasList = Array.isArray(PROD.products);
+  const pctGood = total ? Math.round(good / total * 100) : 0;
 
   prodEl.innerHTML = `
-    <div class="h-head">
-      <div>
-        <h1>All products</h1>
-        <div class="h-sub">Active products on the website by number of images</div>
+    ${phead('All products', `${todayLabel()} · Active products on the website by number of images`,
+      `${hasList ? `<button class="btn" onclick="exportAll()">${DL_ICON}Export all</button>` : ''}<button class="btn" onclick="loadProducts(true)">${REFRESH_ICON}Recount</button>`)}
+    <div class="card kpis">
+      ${kpi('Products on website', num(total), '<div class="kd flat">Active + published</div>')}
+      ${kpi('Images in total', num(totalImgs), '<div class="kd flat">Across all products</div>')}
+      ${kpi('Images per product', avg, `<div class="kd ${avg >= 3 ? 'up' : 'flat'}">${avg >= 3 ? '↗ On target' : 'Target: 3+'}</div>`)}
+      ${kpi('Products with no images', num(zero), zero ? `<div class="kd down">${total ? (zero / total * 100).toFixed(1) : 0}%<span>of catalog</span></div>` : '<div class="kd up">All covered</div>')}
+    </div>
+    <div class="grid21">
+      <div class="card dist">
+        <div class="mini" style="padding-bottom:0"><div class="mini-h">Products by image count<span>Click a row to see SKUs</span></div></div>
+        ${buckets.length ? `
+        <div class="drow head"><div>Images</div><div>Share of products</div><div class="cnt">Products</div><div class="pct">%</div><div></div></div>
+        ${buckets.map(b => {
+          const warn = b.images === 0;
+          const pct = total ? (b.products / total * 100) : 0;
+          return `<div class="drow ${hasList ? 'click' : ''}" ${hasList ? `tabindex="0" role="button" aria-expanded="false" onclick="openBucket(this,${b.images})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openBucket(this,${b.images})}"` : ''}>
+            <div class="lab ${warn ? 'warn' : ''}">${imgLabel(b.images)}</div>
+            <div class="bar ${warn ? 'warn' : ''}"><span style="width:${(b.products / max * 100).toFixed(1)}%"></span></div>
+            <div class="cnt">${num(b.products)}</div>
+            <div class="pct">${pct < 0.1 && pct > 0 ? '<0.1' : pct.toFixed(1)}%</div>
+            ${hasList ? CHEV : '<div></div>'}
+          </div>
+          <div class="dlist" data-n="${b.images}"></div>`;
+        }).join('')}` : '<div class="nores sm">No active products found.</div>'}
       </div>
-      <div class="hbtns">
-        ${hasList ? `<button class="refresh" onclick="exportAll()">${DL_ICON}Export all</button>` : ''}
-        <button class="refresh" onclick="loadProducts(true)">${REFRESH_ICON}Recount</button>
+      <div class="card mini">
+        <div class="mini-h">Image coverage<span>Whole catalog</span></div>
+        ${donutBlock([{ label: '3+ images', value: good, color: C.purple }, { label: '1–2 images', value: low, color: C.gray }, { label: 'No images', value: zero, color: C.red }], pctGood + '%', 'have 3+')}
       </div>
     </div>
-    <div class="summary s4">
-      <div><div class="v">${num(total)}</div><div class="l">Products on website</div></div>
-      <div><div class="v blue">${num(totalImgs)}</div><div class="l">Images in total</div></div>
-      <div><div class="v">${avg}</div><div class="l">Images per product</div></div>
-      <div><div class="v warn">${num(zero)}</div><div class="l">Products with no images</div></div>
-    </div>
-    ${buckets.length ? `<div class="dist">
-      <div class="drow head"><div>Images</div><div>Share of products</div><div class="cnt">Products</div><div class="pct">%</div><div></div></div>
-      ${buckets.map(b => {
-        const warn = b.images === 0;
-        const pct = total ? (b.products / total * 100) : 0;
-        return `<div class="drow ${hasList ? 'click' : ''}" ${hasList ? `tabindex="0" role="button" aria-expanded="false" onclick="openBucket(this,${b.images})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openBucket(this,${b.images})}"` : ''}>
-          <div class="lab ${warn ? 'warn' : ''}">${imgLabel(b.images)}</div>
-          <div class="bar ${warn ? 'warn' : ''}"><span style="width:${(b.products / max * 100).toFixed(1)}%"></span></div>
-          <div class="cnt">${num(b.products)}</div>
-          <div class="pct">${pct < 0.1 && pct > 0 ? '<0.1' : pct.toFixed(1)}%</div>
-          ${hasList ? CHEV : '<div></div>'}
-        </div>
-        <div class="dlist" data-n="${b.images}"></div>`;
-      }).join('')}
-    </div>` : '<div class="nores">No active products found.</div>'}
     <div class="counted">${PROD.updatedAt ? 'Counted ' + ago(PROD.updatedAt) + '. Counts refresh automatically every 6 hours, or click Recount.' : ''}
       ${hasList ? '' : ' Click Recount to load the SKU lists.'}</div>`;
 }
@@ -1055,7 +1342,7 @@ function exportAll() {
 let DDATA = [];
 let DLOADED = false;
 const dsel = {};
-const dmain = document.getElementById('dreview');
+const dmain = document.getElementById('dreviewBody');
 const dlistEl = document.getElementById('dlist');
 
 function sanitize(html) {
@@ -1242,44 +1529,76 @@ function drates(list) {
   return { a, d, base, ap, dp: base ? 100 - ap : 0 };
 }
 
+let dRange = 7;
+function setDRange(n) { dRange = n; drenderHistory(); }
+const wordCount = html => String(html || '').replace(/<[^>]+>/g, ' ').trim().split(/\s+/).filter(Boolean).length;
+
 function drenderHistory() {
   const total = DHIST.length;
   const nf = DHIST.filter(p => p.status === 'not_found').length;
   const R = drates(DHIST);
+  const cur = inDays(DHIST, lastDays(7)), prev = inDays(DHIST, lastDays(14).slice(0, 7));
+  const keys = lastDays(dRange);
+  const inRange = inDays(DHIST, keys), prevRange = inDays(DHIST, lastDays(dRange * 2).slice(0, dRange));
+  const appr = l => l.filter(p => p.status === 'approved').length;
+  const byDay = groupDay(inRange);
+  const labels = keys.map(k => shortDay(k, dRange));
+  const approvedS = keys.map(k => (byDay[k] || []).filter(p => p.status === 'approved').length);
+  const declinedS = keys.map(k => (byDay[k] || []).filter(p => p.status === 'rejected').length);
+  const rateS = keys.map(k => { const r = drates(byDay[k] || []); return r.base ? r.ap : null; });
+  const RR = drates(inRange);
+  const words = { '< 300': 0, '300–400': 0, '400–500': 0, '500+': 0 };
+  DHIST.filter(p => p.status === 'approved').forEach(p => {
+    const w = wordCount(p.final || p.proposed);
+    words[w < 300 ? '< 300' : w < 400 ? '300–400' : w < 500 ? '400–500' : '500+']++;
+  });
+  const vend = {};
+  DHIST.forEach(p => { if (p.status === 'approved') { const v = String(p.vendor || '').trim() || 'Unknown'; vend[v] = (vend[v] || 0) + 1; } });
+  const topV = Object.entries(vend).sort((a, b) => b[1] - a[1]).slice(0, 6);
 
   dhist.innerHTML = `
-    <div class="h-head">
-      <div>
-        <h1>Description history</h1>
-        <div class="h-sub">What was updated on Shopify, day by day</div>
-      </div>
-      <button class="refresh" onclick="dloadHistory(true)">${REFRESH_ICON}Refresh</button>
+    ${phead('Description history', `${todayLabel()} · Long descriptions updated on Shopify`)}
+    <div class="card kpis">
+      ${kpi('Products reviewed', num(total), weekDelta(cur.length))}
+      ${kpi('Descriptions approved', num(R.a), weekDelta(appr(cur)))}
+      ${kpi('Approve rate', R.base ? R.ap + '%' : '—', ptsDelta(drates(cur), drates(prev)))}
+      ${kpi('Nothing found online', num(nf), weekDelta(cur.filter(p => p.status === 'not_found').length, true))}
     </div>
-    <div class="summary s4">
-      <div><div class="v">${num(total)}</div><div class="l">Products reviewed</div></div>
-      <div><div class="v blue">${num(R.a)}</div><div class="l">Descriptions approved</div></div>
-      <div><div class="v">${num(R.d)}</div><div class="l">Declined</div></div>
-      <div><div class="v warn">${num(nf)}</div><div class="l">Nothing found online</div></div>
-    </div>
-    ${R.base ? `<div class="rates">
-      <div class="rates-top">
-        <div><div class="rv ok-t">${R.ap}%</div><div class="rl">Approve rate</div></div>
-        <div><div class="rv no-t">${R.dp}%</div><div class="rl">Decline rate</div></div>
-        <div class="rn">Out of ${plural(R.base, 'reviewed product', 'reviewed products')}. Products with nothing found online aren't counted.</div>
+    <div class="card chart-card">
+      <div class="cc-head">
+        <div class="cc-icon">${DOC_ICON}</div>
+        <div><div class="cc-big">${num(appr(inRange))}</div><div class="cc-sub">Descriptions approved, last ${dRange} days</div></div>
+        ${changePill(pctChange(appr(inRange), appr(prevRange)))}
       </div>
-      <div class="rbar"><span class="a" style="width:${R.ap}%"></span><span class="d" style="width:${R.dp}%"></span></div>
-      <div class="rleg">
-        <span><i style="background:#1565C0"></i>${plural(R.a, 'product', 'products')} approved</span>
-        <span><i style="background:#d9534f"></i>${plural(R.d, 'product', 'products')} declined</span>
+      <div class="cc-tools">
+        <div class="pills">${[7, 14, 30].map(n => `<button class="pill ${n === dRange ? 'on' : ''}" onclick="setDRange(${n})">${n} days</button>`).join('')}</div>
+        <div class="cc-meta"><span>Products <b>${num(inRange.length)}</b></span><span>Approve rate <b>${RR.base ? RR.ap + '%' : '—'}</b></span></div>
       </div>
-    </div>` : ''}
-    <div class="search">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="dhsearch" type="search" placeholder="Search by SKU, product or vendor" value="${esc(dhQuery)}">
+      ${legend([['Approved', C.purple], ['Declined', C.gray]])}
+      ${barsSVG(labels, [{ name: 'Approved', color: C.purple, values: approvedS }, { name: 'Declined', color: C.gray, values: declinedS }])}
     </div>
+    <div class="grid2">
+      <div class="card mini">
+        <div class="mini-h">Review outcome<span>All time</span></div>
+        ${donutBlock([{ label: 'Approved', value: R.a, color: C.purple }, { label: 'Declined', value: R.d, color: C.gray }, { label: 'Nothing found online', value: nf, color: C.lav }], R.base ? R.ap + '%' : '—', 'approved')}
+      </div>
+      <div class="card mini">
+        <div class="mini-h">Approve rate trend<span>Last ${dRange} days</span></div>
+        ${lineSVG(labels, rateS, C.purple)}
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card mini">
+        <div class="mini-h">Description length<span>Words, approved</span></div>
+        ${hbars(Object.entries(words))}
+      </div>
+      <div class="card mini">
+        <div class="mini-h">Top vendors<span>By approved descriptions</span></div>
+        ${topV.length ? hbars(topV) : '<div class="nores sm">No approved descriptions yet</div>'}
+      </div>
+    </div>
+    <div class="sec-h">Daily breakdown</div>
     <div id="dhdays"></div>`;
-
-  document.getElementById('dhsearch').addEventListener('input', e => { dhQuery = e.target.value; drenderDays(); });
   drenderDays();
 }
 
@@ -1354,6 +1673,7 @@ function ddetail(p) {
 }
 
 load();
+dload();
 </script>
 </body>
 </html>
